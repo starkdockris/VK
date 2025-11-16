@@ -95,7 +95,7 @@
             overflow: hidden; 
             border-radius: 16px 16px 0 0; 
         }
-        .project-image img { width: 100%; height: 100%; object-fit: cover; }
+        .project-image img { width: 100%; height: 100%; object-fit: cover; display:block; }
         .project-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
         .project-title { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem; }
         .project-description { color: var(--secondary-color); line-height: 1.6; flex-grow: 1; margin-bottom: 1.5rem; }
@@ -157,11 +157,12 @@
 </head>
 <body>
 
-    <canvas id="circuit-background"></canvas>
+    <canvas id="circuit-background" aria-hidden="true"></canvas>
 
     <header>
         <div class="logo">
             <a href="index.html">
+                <!-- updated to pic/ path -->
                 <img src="pic/VKL1.png" alt="Vyshak T M Logo" class="logo-img">
             </a>
         </div>
@@ -239,28 +240,105 @@
         <p>&copy; 2025 Vyshak T M. All Rights Reserved.</p>
     </footer>
 
+    <!-- === Robust, DOM-ready script (replaces previous inline script) === -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const skills = {
-              soft: ["Leadership","Communication","Strategy","Problem Solving","Critical Thinking","Team Collaboration","Project Management","Adaptability"],
-              languages: ["Python","C/C++","SQL","JavaScript","HTML/CSS"],
-              ml: ["TensorFlow","OpenCV","YOLO","PyTorch","Scikit-learn","Pandas","NumPy"],
-              db: ["SQL","MongoDB","Firebase","MySQL","PostgreSQL", "Git", "Django", "React", "Flask", "FastAPI", "Node.js", "AWS IoT"],
-            };
-            function makeChips(list, id){ const c = document.getElementById(id); if(c) list.forEach(t => { const d=document.createElement('div'); d.className='chip'; d.textContent=t; c.appendChild(d); }); }
-            makeChips(skills.soft,'softChips'); makeChips(skills.languages,'langChips'); makeChips(skills.ml,'mlChips'); makeChips(skills.db,'dbChips');
-            document.querySelectorAll('.bar > i').forEach(el => { const w = el.getAttribute('data-w') || 50; setTimeout(() => el.style.width = w + '%', 300); });
-        });
-        const canvas = document.getElementById('circuit-background'); const ctx = canvas.getContext('2d');
-        let width = canvas.width = window.innerWidth; let height = canvas.height = window.innerHeight;
-        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; init(); });
+    document.addEventListener('DOMContentLoaded', () => {
+      // Build chips + animate bars (guarded)
+      try {
+        const skills = {
+          soft: ["Leadership","Communication","Strategy","Problem Solving","Critical Thinking","Team Collaboration","Project Management","Adaptability"],
+          languages: ["Python","C/C++","SQL","JavaScript","HTML/CSS"],
+          ml: ["TensorFlow","OpenCV","YOLO","PyTorch","Scikit-learn","Pandas","NumPy"],
+          db: ["SQL","MongoDB","Firebase","MySQL","PostgreSQL", "Git", "Django", "React", "Flask", "FastAPI", "Node.js", "AWS IoT"],
+        };
+        function makeChips(list, id){
+          const c = document.getElementById(id);
+          if (c) list.forEach(t => { const d=document.createElement('div'); d.className='chip'; d.textContent=t; c.appendChild(d); });
+        }
+        makeChips(skills.soft,'softChips'); makeChips(skills.languages,'langChips'); makeChips(skills.ml,'mlChips'); makeChips(skills.db,'dbChips');
+        document.querySelectorAll('.bar > i').forEach(el => { const w = el.getAttribute('data-w') || 50; setTimeout(() => el.style.width = w + '%', 300); });
+      } catch (err) {
+        console.error('Error building chips/progress bars:', err);
+      }
+
+      // Canvas particle background init (fully guarded)
+      try {
+        const canvas = document.getElementById('circuit-background');
+        if (!canvas) throw new Error('Canvas element not found');
+        const ctx = canvas.getContext && canvas.getContext('2d');
+        if (!ctx) throw new Error('2D context unavailable');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
         const mouse = { x: undefined, y: undefined, radius: 150 };
-        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; }); window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
-        class Particle { constructor(x, y, dX, dY, s) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; } draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle='rgba(100,100,100,0.5)'; ctx.fill(); } update() { if(this.x>width||this.x<0){this.directionX=-this.directionX;} if(this.y>height||this.y<0){this.directionY=-this.directionY;} this.x+=this.directionX; this.y+=this.directionY; this.draw(); } }
-        let particlesArray; function init() { particlesArray=[]; let num = (width*height)/9000; for(let i=0; i<num; i++){ let s=(Math.random()*1.5)+1; let x=(Math.random()*((width-s*2)-(s*2))+s*2); let y=(Math.random()*((height-s*2)-(s*2))+s*2); let dX=(Math.random()*0.4)-0.2; let dY=(Math.random()*0.4)-0.2; particlesArray.push(new Particle(x,y,dX,dY,s)); } }
-        function connect() { let opacity=1; for(let a=0; a<particlesArray.length; a++){ for(let b=a; b<particlesArray.length; b++){ let dist=((particlesArray[a].x-particlesArray[b].x)*(particlesArray[a].x-particlesArray[b].x))+((particlesArray[a].y-particlesArray[b].y)*(particlesArray[a].y-particlesArray[b].y)); if(dist<(width/7)*(height/7)){ opacity=1-(dist/20000); let dx=mouse.x-particlesArray[a].x; let dy=mouse.y-particlesArray[a].y; let mouseDist=Math.sqrt(dx*dx+dy*dy); if(mouseDist<mouse.radius){ ctx.strokeStyle=`rgba(255,255,255,${opacity})`; }else{ ctx.strokeStyle=`rgba(100,100,100,${opacity})`; } ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(particlesArray[a].x,particlesArray[a].y); ctx.lineTo(particlesArray[b].x,particlesArray[b].y); ctx.stroke(); } } } }
-        function animate() { requestAnimationFrame(animate); ctx.clearRect(0,0,width,height); for(let i=0; i<particlesArray.length; i++){ particlesArray[i].update(); } connect(); }
-        init(); animate();
+        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; init(); });
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+
+        class Particle {
+          constructor(x, y, dX, dY, s) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; }
+          draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle='rgba(100,100,100,0.5)'; ctx.fill(); }
+          update() {
+            if (this.x>width||this.x<0) this.directionX=-this.directionX;
+            if (this.y>height||this.y<0) this.directionY=-this.directionY;
+            this.x+=this.directionX; this.y+=this.directionY; this.draw();
+          }
+        }
+
+        let particlesArray = [];
+        function init() {
+          particlesArray = [];
+          const num = Math.max(12, Math.floor((width*height)/9000));
+          for (let i=0;i<num;i++){
+            const s = (Math.random()*1.5)+1;
+            const x = Math.random()*(width - s*4) + s*2;
+            const y = Math.random()*(height - s*4) + s*2;
+            const dX = (Math.random()*0.4)-0.2;
+            const dY = (Math.random()*0.4)-0.2;
+            particlesArray.push(new Particle(x,y,dX,dY,s));
+          }
+        }
+
+        function connect() {
+          const limit = (width/7)*(height/7);
+          for (let a=0; a<particlesArray.length; a++){
+            for (let b=a+1; b<particlesArray.length; b++){
+              const dx = particlesArray[a].x - particlesArray[b].x;
+              const dy = particlesArray[a].y - particlesArray[b].y;
+              const dist = dx*dx + dy*dy;
+              if (dist < limit) {
+                let opacity = 1 - (dist / 20000);
+                const mx = (mouse.x === undefined) ? Infinity : (mouse.x - particlesArray[a].x);
+                const my = (mouse.y === undefined) ? Infinity : (mouse.y - particlesArray[a].y);
+                const mouseDist = Math.sqrt(mx*mx + my*my);
+                ctx.strokeStyle = (mouseDist < mouse.radius) ? `rgba(255,255,255,${opacity})` : `rgba(100,100,100,${opacity})`;
+                ctx.lineWidth = 0.5;
+                ctx.beginPath();
+                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        function animate() {
+          requestAnimationFrame(animate);
+          ctx.clearRect(0,0,width,height);
+          for (let i=0; i<particlesArray.length; i++) particlesArray[i].update();
+          connect();
+        }
+
+        init();
+        animate();
+        console.log('Canvas background initialized');
+      } catch (err) {
+        console.error('Canvas init failed:', err);
+        const c = document.getElementById('circuit-background');
+        if (c) c.style.display = 'none';
+      }
+    });
     </script>
 </body>
 </html>
