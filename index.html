@@ -1,296 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Vyshak T M | Portfolio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
+
     <style>
-        /* General Styling & Variables */
-        :root {
-            --primary-color: #ffffff;
-            --secondary-color: #a7a7a7;
-            --background-color: #0a0a0a;
-            --accent-color: #3d3d3d;
-            --highlight-color: #8cb4ff; /* Royal Blue */
-            --container-bg-color: rgba(18, 18, 18, 0.75);
+        /* ---------- Responsive & Style Variables ---------- */
+        :root{
+            --primary-color:#ffffff;
+            --secondary-color:#a7a7a7;
+            --background-color:#0a0a0a;
+            --accent-color:#3d3d3d;
+            --highlight-color:#8cb4ff;
+            --container-bg-color: rgba(18,18,18,0.75);
             --hero-font: 'Source Serif Pro', serif;
             --base-font: 'Inter', sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            background-color: var(--background-color);
-            color: var(--primary-color);
-            font-family: var(--base-font);
-            overflow-x: hidden;
+        *{box-sizing:border-box;margin:0;padding:0}
+        html{scroll-behavior:smooth}
+        body{
+            font-family:var(--base-font);
+            background-color:var(--background-color);
+            color:var(--primary-color);
+            overflow-x:hidden; /* prevent horizontal scroll on mobile */
         }
 
-        /* The Interactive Background Canvas */
-        #circuit-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        /* Canvas background */
+        #circuit-background{position:fixed;left:0;top:0;width:100%;height:100%;z-index:-1}
 
-        /* General Container */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-        
-        /* Section Wrapper - REDUCED PADDING */
-        .section-wrapper { position: relative; z-index: 1; padding: 4rem 2rem; }
+        /* Container */
+        .container{max-width:1200px;margin:0 auto;padding:0 1.25rem;position:relative;z-index:1}
 
-        /* Header & Navigation */
-        header { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        /* This new padding creates a large, deliberate gap at the top */
-        padding: 4rem 0 2rem 0; 
-        animation: fadeInDown 1s ease-out; 
+        /* Section wrapper */
+        .section-wrapper{position:relative;z-index:1;padding:3rem 1.25rem}
+
+        /* Header */
+        header{
+            display:flex;align-items:center;justify-content:space-between;
+            padding:2.25rem 0 1rem 0;animation:fadeInDown 1s ease-out;gap:1rem;
+        }
+        .logo a{display:flex;align-items:center;text-decoration:none}
+        .logo-img{height:64px;width:auto}
+
+        nav{display:flex;align-items:center;gap:.5rem}
+        nav ul{list-style:none;display:flex;gap:1.25rem;align-items:center}
+        nav a{color:var(--secondary-color);text-decoration:none;font-size:.95rem;transition:color .3s}
+        nav a:not(.button-primary):hover{color:var(--primary-color)}
+
+        .button-primary{margin-left:1rem;padding:.6rem 1.1rem;background:var(--primary-color);color:var(--background-color);border-radius:50px;font-weight:500;text-decoration:none;white-space:nowrap;transition:transform .25s}
+        .button-primary:hover{transform:scale(1.03)}
+        .button-secondary{display:inline-block;margin-top:1.25rem;padding:.9rem 1.6rem;border:1px solid var(--accent-color);color:var(--primary-color);border-radius:50px;font-weight:600;text-decoration:none}
+        .button-secondary:hover{background:var(--primary-color);color:var(--background-color)}
+
+        /* Hero */
+        .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4rem 0;min-height:72vh;font-family:var(--hero-font);justify-content:center;animation:fadeInUp 1s ease-out}
+        .hero-intro{color:var(--secondary-color);margin-bottom:.75rem;font-style:italic;font-size:1rem}
+        .hero h1{font-weight:700;letter-spacing:1px;font-size:clamp(2.2rem,7vw,4.2rem);position:relative;line-height:1.02}
+        .hero h1::after{content:'|';position:absolute;animation:blink .7s infinite}
+        .hero h1.typing-done::after{display:none}
+        .name-highlight{color:var(--highlight-color);transition:color .8s}
+        .hero h2{font-size:clamp(1.2rem,4vw,2rem);font-weight:600;margin-bottom:1rem}
+        .hero-subtitle{max-width:680px;color:var(--secondary-color);font-style:italic;line-height:1.6}
+        .fade-in-after-typing{opacity:0;transition:opacity 1s ease .4s;width:100%;display:flex;flex-direction:column;align-items:center}
+        .fade-in-after-typing.visible{opacity:1}
+
+        /* Frosted container */
+        .frosted-container{background:var(--container-bg-color);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--accent-color);border-radius:12px}
+
+        /* Highlights */
+        .highlights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;max-width:1200px;margin:0 auto}
+        .highlight-card{padding:1.25rem;transition:transform .25s,border-color .25s}
+        .highlight-card:hover{transform:translateY(-4px);border-color:var(--highlight-color)}
+        .highlight-title{font-size:1.05rem;font-weight:600;margin-bottom:.5rem}
+        .highlight-description{color:var(--secondary-color);font-size:.9rem;line-height:1.4}
+
+        /* About */
+        .about-container{max-width:1200px;margin:0 auto;padding:2rem}
+        .section-header{text-align:center;margin-bottom:2rem}
+        .section-header h2{font-size:clamp(1.6rem,4vw,2rem);font-weight:700;margin-bottom:.5rem}
+        .section-header .divider{width:64px;height:4px;background:var(--highlight-color);margin:.5rem auto 1rem;border-radius:2px}
+        .section-header p{max-width:700px;margin:0 auto;color:var(--secondary-color);font-size:1rem}
+        .about-content{display:flex;align-items:center;gap:1.5rem}
+        .about-image{flex-shrink:0;width:220px;height:220px;border-radius:50%;overflow:hidden;border:2px solid var(--accent-color);box-shadow:0 0 18px rgba(0,0,0,.5);transition:all .35s}
+        .about-image img{width:100%;height:100%;object-fit:cover}
+        .about-image:hover{transform:scale(1.02);border-color:var(--highlight-color);box-shadow:0 0 20px rgba(140,180,255,.5),0 0 36px rgba(140,180,255,.3)}
+        .about-text{flex:1}
+        .about-text h3{font-size:1.25rem;margin-bottom:.75rem}
+        .about-text p{line-height:1.6;color:var(--secondary-color);margin-bottom:1rem;font-size:.95rem}
+        .achievements-list{list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin-bottom:1.25rem}
+        .achievements-list svg{width:18px;height:18px;color:var(--highlight-color)}
+
+        .linkedin-link{display:inline-flex;align-items:center;gap:.5rem;color:var(--highlight-color);text-decoration:none;font-weight:600}
+        .linkedin-link svg{width:16px;height:16px}
+
+        /* Gallery */
+        .gallery-track{display:flex;width:fit-content;animation:scroll 30s linear infinite;margin:1.5rem auto;align-items:center}
+        .gallery-item{height:150px;width:260px;margin:0 1.5rem;border-radius:12px;background:var(--accent-color);overflow:hidden;display:flex;align-items:center;justify-content:center}
+        .gallery-item img{width:100%;height:100%;object-fit:cover;filter:grayscale(1);opacity:.75;transition:all .25s}
+        .gallery-item:hover img{filter:grayscale(0);opacity:1;transform:scale(1.08)}
+
+        @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(calc(-324px * 6))}}
+
+        /* Timeline */
+        .experience-container{max-width:900px;margin:0 auto}
+        .timeline-item{position:relative;padding-left:64px;margin-bottom:2.25rem}
+        .timeline-item::after{content:'';position:absolute;top:40px;left:19px;width:2px;height:100%;background:var(--accent-color)}
+        .timeline-icon{position:absolute;left:0;top:0;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(140,180,255,.08);border:1px solid var(--accent-color);color:var(--highlight-color)}
+        .timeline-content{padding:1.5rem}
+        .timeline-header{display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;margin-bottom:.25rem;flex-wrap:wrap}
+        .timeline-title{font-size:1.1rem;font-weight:700}
+        .timeline-date{background:var(--accent-color);color:var(--primary-color);padding:.25rem .6rem;border-radius:10px;font-size:.8rem;white-space:nowrap}
+        .timeline-company{color:var(--highlight-color);font-weight:500;margin-bottom:.75rem}
+        .timeline-description{color:var(--secondary-color);line-height:1.6;margin-bottom:1rem}
+        .timeline-tags{display:flex;flex-wrap:wrap;gap:.5rem}
+        .timeline-tag{background:var(--accent-color);color:var(--secondary-color);padding:.25rem .6rem;border-radius:6px;font-size:.78rem}
+
+        /* Awards & Publications */
+        .awards-container,.publications-container{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:1rem}
+        .award-card,.publication-card{display:flex;gap:1rem;padding:1rem;transition:border-color .25s}
+        .award-icon,.publication-icon{flex-shrink:0;color:var(--highlight-color)}
+        .award-icon svg,.publication-icon svg{width:28px;height:28px}
+        .award-details h3,.publication-details h3{font-size:1.05rem}
+        .award-issuer,.publication-issuer{color:var(--secondary-color);font-style:italic;margin-bottom:.75rem}
+        .view-paper-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.45rem .9rem;border:1px solid var(--accent-color);border-radius:999px;color:var(--highlight-color);text-decoration:none;font-weight:600}
+        .view-paper-btn svg{width:16px;height:16px}
+
+        /* Slogan & Contact & Footer */
+        .slogan-section{text-align:center;padding:3.5rem 1rem}
+        .slogan-text{font-family:var(--hero-font);font-size:clamp(1.4rem,4vw,2.2rem);max-width:720px;margin:0 auto;line-height:1.35}
+        .contact-container{max-width:800px;margin:0 auto;text-align:center;padding:2rem}
+        .contact-links{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:1rem}
+        .contact-link{display:flex;flex-direction:column;align-items:center;gap:.5rem;text-decoration:none;color:var(--secondary-color);transition:transform .25s}
+        .contact-icon{border:1px solid var(--accent-color);border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center}
+        .site-footer{text-align:center;padding:1.25rem;border-top:1px solid var(--accent-color);color:var(--secondary-color);margin-top:1rem;font-size:.9rem}
+
+        /* ---------- Responsive Breakpoints ---------- */
+        @media (max-width:992px){
+            .about-content{flex-direction:column;gap:1.25rem}
+            .about-container{padding:1.25rem}
+            .logo-img{height:56px}
+            nav ul{gap:.75rem}
+        }
+        @media (max-width:768px){
+            .achievements-list{grid-template-columns:1fr}
+            .about-image{width:180px;height:180px}
+            .hero{padding:2.5rem 0;min-height:60vh}
+            .section-wrapper{padding:1.25rem}
+            .timeline-item{padding-left:52px}
+            .timeline-icon{width:38px;height:38px}
+            .timeline-item::after{left:17px}
+            .timeline-content{padding:1rem}
+            .award-card,.publication-card{flex-direction:column;gap:.75rem;padding:1rem}
+            .contact-container{padding:1.25rem}
+
+            /* Gallery adjustments */
+            .gallery-track{animation-duration:28s}
+            .gallery-item{width:220px;height:120px;margin:0 1rem}
+
+            /* Simplify header on small screens */
+            header{padding:1rem .5rem;gap:.5rem}
+            nav ul{display:none} /* hide nav items to avoid clutter on tiny screens */
+            .button-primary{border-radius:999px}
+        }
+        @media (max-width:420px){
+            .logo-img{height:48px}
+            .hero h1{font-size:clamp(1.6rem,8vw,2.4rem)}
+            .hero h2{font-size:1rem}
+            .about-image{width:140px;height:140px}
+            .gallery-item{width:180px;height:110px;margin:0 .75rem}
+            .section-header h2{font-size:1.1rem}
+            .slogan-text{font-size:1.1rem}
+            .fade-in-after-typing{padding:0 .5rem}
         }
 
-        .logo a { 
-            text-decoration: none; 
-            display: flex; /* Helps with vertical alignment of the logo */
-            align-items: center;
-        }
-        /* NEW rule for the logo image */
-        .logo-img {
-            height: 80px; /* Adjust this value to set your logo's height */
-            width: auto; /* Maintains aspect ratio */
-        }
-
-        nav { display: flex; align-items: center; }
-        nav ul { list-style: none; display: flex; }
-        nav ul li { margin-left: 2.5rem; }
-        nav a { color: var(--secondary-color); text-decoration: none; font-size: 1rem; transition: color 0.3s ease; }
-        nav a:not(.button-primary):hover { color: var(--primary-color); }
-
-        /* Buttons */
-        .button-primary { margin-left: 2.5rem; padding: 0.75rem 1.5rem; background-color: var(--primary-color); color: var(--background-color); border-radius: 50px; font-weight: 500; text-decoration: none; transition: transform 0.3s ease, background-color 0.3s ease; }
-        .button-primary:hover { transform: scale(1.05); background-color: #f0f0f0; }
-        .button-secondary { display: inline-block; margin-top: 2rem; padding: 1rem 2rem; border: 1px solid var(--accent-color); color: var(--primary-color); text-decoration: none; border-radius: 50px; font-weight: 600; transition: background-color 0.3s ease, color 0.3s ease; }
-        .button-secondary:hover { background-color: var(--primary-color); color: var(--background-color); }
-
-        /* Hero Section */
-        .hero { text-align: center; padding: 6rem 0; display: flex; flex-direction: column; align-items: center; animation: fadeInUp 1s ease-out; min-height: 80vh; justify-content: center; font-family: var(--hero-font); }
-        .hero-intro { color: var(--secondary-color); margin-bottom: 1rem; font-size: 1.1rem; font-style: italic; }
-        .hero h1 { font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 1px; font-size: clamp(3rem, 8vw, 5rem); min-height: 1.2em; position: relative; }
-        .name-highlight { color: var(--highlight-color); transition: color 0.8s ease-in-out; }
-        .hero h1::after { content: '|'; position: absolute; animation: blink 0.7s infinite; }
-        .hero h1.typing-done::after { display: none; }
-        .hero h2 { font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 600; color: var(--primary-color); margin-bottom: 1.5rem; }
-        .hero-subtitle { max-width: 600px; font-size: 1.2rem; line-height: 1.6; color: var(--secondary-color); font-style: italic; }
-        .fade-in-after-typing { opacity: 0; transition: opacity 1s ease 0.5s; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        .fade-in-after-typing.visible { opacity: 1; }
-
-        /* Frosted Glass Container Base Style */
-        .frosted-container { background: var(--container-bg-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--accent-color); border-radius: 16px; }
-        
-        /* NEW: Highlights Section */
-        .highlights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .highlight-card {
-            padding: 2rem;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-        .highlight-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--highlight-color);
-        }
-        .highlight-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 0.75rem;
-        }
-        .highlight-description {
-            color: var(--secondary-color);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-        .highlight-title span {
-            color: var(--highlight-color);
-        }
-
-        /* About Section */
-        .about-container { max-width: 1200px; margin: 0 auto; padding: 4rem; }
-        .section-header { text-align: center; margin-bottom: 4rem; }
-        .section-header h2 { font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-color); }
-        .section-header .divider { width: 80px; height: 4px; background-color: var(--highlight-color); margin: 0.5rem auto 1rem; border-radius: 2px; }
-        .section-header p { font-size: 1.1rem; color: var(--secondary-color); max-width: 700px; margin: 0 auto; }
-        .about-content { display: flex; align-items: center; gap: 4rem; }
-        .about-image {
-            flex-shrink: 0; /* Prevents the circle from shrinking */
-            width: 300px;  /* Defines a fixed width */
-            height: 300px; /* Defines a fixed height to make it a circle */
-            border-radius: 50%; /* This is the key to the circular shape */
-            overflow: hidden; /* Hides the corners of the image */
-            border: 3px solid var(--accent-color); /* A subtle default border */
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            transition: all 0.4s ease; /* Smooth transition for all effects */
-        }
-        .about-image:hover {
-            border-color: var(--highlight-color); /* Changes border to blue on hover */
-            box-shadow: 0 0 25px rgba(140, 180, 255, 0.6), /* Inner blue glow */
-                        0 0 45px rgba(140, 180, 255, 0.4); /* Outer blue glow */
-            transform: scale(1.03); /* Slight enlargement on hover */
-        }
-        .about-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Ensures the image fills the circle without distortion */
-        }
-    
-        .about-text { flex: 1.2; }
-        .about-text h3 { font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; color: var(--primary-color); }
-        .about-text p { line-height: 1.7; margin-bottom: 1.5rem; color: var(--secondary-color); }
-        .achievements-list { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem; }
-        .achievements-list li { display: flex; align-items: center; gap: 0.75rem; color: var(--secondary-color); }
-        .achievements-list svg { width: 20px; height: 20px; color: var(--highlight-color); flex-shrink: 0; }
-        .linkedin-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--highlight-color); text-decoration: none; font-weight: 600; transition: opacity 0.3s ease; }
-        .linkedin-link:hover { opacity: 0.8; text-decoration: underline; }
-        .linkedin-link svg { width: 18px; height: 18px; }
-
-        .gallery-track { display: flex; width: fit-content; animation: scroll 30s linear infinite; }
-        .gallery-container:hover .gallery-track { animation-play-state: paused; }
-        .gallery-item {
-            height: 180px; /* Made container even taller */
-            width: 320px;  /* Made container even wider */
-            margin: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 16px;
-            background-color: var(--accent-color);
-            overflow: hidden;
-        }
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: grayscale(1);
-            opacity: 0.7;
-            transition: all 0.3s ease-in-out; /* Smoother transition */
-        }
-        /* This rule restores the hover effects */
-        .gallery-item:hover img {
-            filter: grayscale(0);
-            opacity: 1;
-            transform: scale(1.1); /* Enlarge on hover */
-        }
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% {
-                /* UPDATED CALCULATION: (320px width + 64px margin) * 6 = 2304px */
-                transform: translateX(calc(-384px * 6));
-            }
-        }
-    
-
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% {
-                /* (width + margin) * number of original images */
-                /* (240px + 4rem(64px)) * 6 = 1824px */
-                transform: translateX(calc(-304px * 6));
-            }
-        }
-        
-        /* Experience Section */
-        .experience-container { max-width: 900px; margin: 0 auto; }
-        .timeline-item { position: relative; padding-left: 72px; margin-bottom: 3rem; }
-        .timeline-item:last-child { margin-bottom: 0; }
-        .timeline-item::after { content: ''; position: absolute; top: 48px; left: 23px; width: 2px; height: 100%; background-color: var(--accent-color); }
-        .timeline-item:last-child::after { display: none; }
-        .timeline-icon { position: absolute; left: 0; top: 0; width: 48px; height: 48px; border-radius: 50%; background: rgba(140, 180, 255, 0.1); color: var(--highlight-color); display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent-color); z-index: 1; }
-        .timeline-icon svg { width: 24px; height: 24px; }
-        .timeline-content { padding: 2rem; transition: border-color 0.3s ease; }
-        .timeline-content:hover { border-color: var(--highlight-color); }
-        .timeline-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.25rem; }
-        .timeline-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); }
-        .timeline-date { background: var(--accent-color); color: var(--primary-color); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.875rem; white-space: nowrap; }
-        .timeline-company { color: var(--highlight-color); font-weight: 500; margin-bottom: 1rem; font-size: 1rem; }
-        .timeline-description { color: var(--secondary-color); line-height: 1.7; margin-bottom: 1.5rem; }
-        .timeline-description ul { list-style-type: disc; padding-left: 20px; }
-        .timeline-description ul li { margin-bottom: 0.5rem; }
-        .timeline-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-        .timeline-tag { background: var(--accent-color); color: var(--secondary-color); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; }
-        
-        /* Awards & Publications Common Styles */
-        .awards-container, .publications-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
-        .award-card, .publication-card { display: flex; gap: 2rem; padding: 2rem; transition: border-color 0.3s ease; }
-        .award-card:hover, .publication-card:hover { border-color: var(--highlight-color); }
-        .award-icon, .publication-icon { flex-shrink: 0; color: var(--highlight-color); }
-        .award-icon svg, .publication-icon svg { width: 32px; height: 32px; }
-        .award-details h3, .publication-details h3 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.25rem; }
-        .award-issuer, .publication-issuer { color: var(--secondary-color); font-size: 1rem; margin-bottom: 1rem; font-style: italic; }
-        .award-description, .publication-description { color: var(--secondary-color); line-height: 1.7; }
-        .publication-description ul { margin-top: 1rem; list-style-type: disc; padding-left: 20px; }
-        .publication-description ul li { margin-bottom: 0.5rem; }
-        .publication-citation { font-family: monospace; font-size: 0.9rem; line-height: 1.6; word-break: break-all; }
-        .view-paper-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 0.6rem 1.2rem; border: 1px solid var(--accent-color); color: var(--highlight-color); text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease; }
-        .view-paper-btn:hover { background-color: var(--highlight-color); color: var(--background-color); }
-        .view-paper-btn svg { width: 18px; height: 18px; }
-
-        /* Slogan Section - REDUCED PADDING */
-        .slogan-section { text-align: center; padding: 6rem 2rem; }
-        .slogan-text { font-family: var(--hero-font); font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; max-width: 800px; margin: 0 auto; line-height: 1.4; }
-        .slogan-text span { color: var(--highlight-color); }
-
-        /* Contact Section */
-        .contact-container { max-width: 800px; margin: 0 auto; text-align: center; padding: 4rem; }
-        .contact-links { display: flex; justify-content: center; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
-        .contact-link { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--secondary-color); transition: color 0.3s ease, transform 0.3s ease; }
-        .contact-link:hover { color: var(--highlight-color); transform: translateY(-5px); }
-        .contact-icon { border: 1px solid var(--accent-color); border-radius: 50%; width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; transition: border-color 0.3s ease; }
-        .contact-link:hover .contact-icon { border-color: var(--highlight-color); }
-        .contact-icon svg { width: 32px; height: 32px; }
-
-        /* Footer */
-        .site-footer { text-align: center; padding: 2rem; color: var(--secondary-color); font-size: 0.9rem; border-top: 1px solid var(--accent-color); margin-top: 2rem; }
-        .site-footer a { color: var(--highlight-color); text-decoration: none; }
-        .site-footer a:hover { text-decoration: underline; }
-
-        /* Responsive */
-        @media (max-width: 992px) {
-            .about-content { flex-direction: column; gap: 3rem; }
-            .about-container { padding: 3rem; }
-        }
-        @media (max-width: 768px) {
-             .achievements-list { grid-template-columns: 1fr; }
-             .about-container { padding: 2rem; }
-             .about-image {
-                width: 240px;
-                height: 240px;
-             }
-             
-             /* We redeclare the keyframes INSIDE the media query to ensure it overrides correctly */
-             @keyframes scroll {
-                0% { transform: translateX(0); }
-                100% {
-                    /* UPDATED MOBILE CALCULATION: (220px width + 32px margin) * 6 = 1512px */
-                    transform: translateX(calc(-252px * 6));
-                }
-            }
-             .timeline-item { padding-left: 60px; }
-             .timeline-icon { width: 40px; height: 40px; left: 0; }
-             .timeline-item::after { left: 19px; }
-             .timeline-content { padding: 1.5rem; }
-             .award-card, .publication-card { flex-direction: column; gap: 1rem; padding: 1.5rem; }
-             .contact-container { padding: 2.5rem; }
-        }
-        
         /* Animations */
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(calc(-264px * 6)); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+        @keyframes fadeInDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
     </style>
 </head>
 <body>
@@ -300,14 +191,12 @@
     <header class="container">
         <div class="logo">
             <a href="index.html">
-                <!-- IMPORTANT: Replace 'YOUR_LOGO.svg' with the path to your logo file (e.g., logo.png) -->
                 <img src="pic/VKL1.png" alt="Vyshak T M Logo" class="logo-img">
             </a>
         </div>
         <nav>
             <ul>
                 <li><a href="works.html">Works & Skills</a></li>
-                <!-- The redundant "Contact" link has been removed -->
             </ul>
             <a href="#contact" class="button-primary">Get In Touch</a>
         </nav>
@@ -347,7 +236,12 @@
 
         <section class="section-wrapper">
             <div class="about-container frosted-container">
-                <div class="section-header"><h2>Innovative Engineering & Product Design</h2><div class="divider"></div><p>Merging technical expertise with creative problem-solving for efficient, user-focused products.</p></div>
+                <div class="section-header">
+                    <h2>Innovative Engineering & Product Design</h2>
+                    <div class="divider"></div>
+                    <p>Merging technical expertise with creative problem-solving for efficient, user-focused products.</p>
+                </div>
+
                 <div class="about-content">
                     <div class="about-image"><img src="pic/VK.jpg" alt="Vyshak T M speaking at an event"></div>
                     <div class="about-text">
@@ -355,57 +249,232 @@
                         <p>I am a tech converger with a passion for product design, API Developer for IoT & Supply Chain, AI automation, and IoT development, driving innovation at the intersection of technology and real-world applications. My expertise spans from cutting-edge product management to developing intelligent automation solutions that redefine industries.</p>
                         <p>Beyond technology, I am also a mentor and educator, specializing in corporate personality development, communication, networking, and personal branding. I take a unique and engaging approach to help professionals and aspiring leaders craft powerful personal brands, enhance their communication skills, and build strong networks that open doors to new opportunities.</p>
                         <p>With a blend of technical mastery and leadership coaching, I bridge the gap between innovation and influence, empowering individuals and businesses to excel in the digital age.</p>
+
                         <ul class="achievements-list">
-                            <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>Top 1% Multi-Domain Innovator</li>
-                            <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>Elite Systems Architect</li>
-                            <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>National-Level Recognized Engineer</li>
-                            <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>High-Influence Community Builder</li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                Top 1% Multi-Domain Innovator
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                Elite Systems Architect
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                National-Level Recognized Engineer
+                            </li>
+                            <li>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>
+                                High-Influence Community Builder
+                            </li>
                         </ul>
-                        <a href="#" class="linkedin-link">View LinkedIn Profile <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /></svg></a>
+
+                        <a href="#" class="linkedin-link">View LinkedIn Profile
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /></svg>
+                        </a>
                     </div>
                 </div>
             </div>
         </section>
-        
+
         <div class="gallery-track">
-                    <!-- Add your 6 images here. The script will handle the looping. -->
-                    <div class="gallery-item"><img src="pic/DSC_0221.JPG" alt="Logo 1"></div>
-                    <div class="gallery-item"><img src="pic/DSC_0358.JPG" alt="Logo 2"></div>
-                    <div class="gallery-item"><img src="pic/g1.png" alt="Logo 3"></div>
-                    <div class="gallery-item"><img src="pic/g2.png" alt="Logo 4"></div>
-                    <div class="gallery-item"><img src="pic/g3.png" alt="Logo 5"></div>
-                    <div class="gallery-item"><img src="pic/g4.png" alt="Logo 6"></div>
+            <div class="gallery-item"><img src="pic/DSC_0221.JPG" alt="Logo 1"></div>
+            <div class="gallery-item"><img src="pic/DSC_0358.JPG" alt="Logo 2"></div>
+            <div class="gallery-item"><img src="pic/g1.png" alt="Logo 3"></div>
+            <div class="gallery-item"><img src="pic/g2.png" alt="Logo 4"></div>
+            <div class="gallery-item"><img src="pic/g3.png" alt="Logo 5"></div>
+            <div class="gallery-item"><img src="pic/g4.png" alt="Logo 6"></div>
         </div>
 
         <section class="section-wrapper">
             <div class="section-header"><h2>Work Experience</h2><div class="divider"></div><p>A journey through my professional career and key achievements</p></div>
-            <div class="experience-container"><div class="timeline">
-                <div class="timeline-item"><div class="timeline-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div><div class="timeline-content frosted-container"><div class="timeline-header"><h3 class="timeline-title">Logistics | E-commerce Supply Chain</h3><span class="timeline-date">Apr 2025 - Present</span></div><div class="timeline-company">Y-Not Design & Mfg. · On-site</div><p class="timeline-description">Driving innovation in logistics and e-commerce supply chains by designing and implementing cutting-edge solutions. [Placeholder for detailed description].</p><div class="timeline-tags"><span class="timeline-tag">Logistics</span><span class="timeline-tag">Supply Chain</span><span class="timeline-tag">E-commerce</span></div></div></div>
-                <div class="timeline-item"><div class="timeline-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg></div><div class="timeline-content frosted-container"><div class="timeline-header"><h3 class="timeline-title">Next-Gen Associate</h3><span class="timeline-date">Jan 2025 - Apr 2025</span></div><div class="timeline-company">StemUp · Internship</div><div class="timeline-description"><ul><li>Researched and analyzed the end-to-end electronics ecosystem, mapping the roles of different stakeholders.</li><li>Developed and implemented automated email workflows with customizable documentation to streamline communication.</li><li>Served on the core team for a campus drive of 1,500 students, ensuring smooth event execution.</li></ul></div><div class="timeline-tags"><span class="timeline-tag">Analysis</span><span class="timeline-tag">Automation</span><span class="timeline-tag">Operations</span></div></div></div>
-                <div class="timeline-item"><div class="timeline-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg></div><div class="timeline-content frosted-container"><div class="timeline-header"><h3 class="timeline-title">Backend Interfacing (Developer)</h3><span class="timeline-date">Oct 2023 - Nov 2023</span></div><div class="timeline-company">Senquire · Internship</div><p class="timeline-description">Specialized in backend interfacing for webcams, USB, and IP cameras in a Linux environment. Successfully implemented recording features, capturing and storing data, and utilized React for frontend applications.</p><div class="timeline-tags"><span class="timeline-tag">React</span><span class="timeline-tag">Backend</span><span class="timeline-tag">Camera Operation</span><span class="timeline-tag">Linux</span></div></div></div>
-            </div></div>
+            <div class="experience-container">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <div class="timeline-content frosted-container">
+                            <div class="timeline-header">
+                                <h3 class="timeline-title">Logistics | E-commerce Supply Chain</h3>
+                                <span class="timeline-date">Apr 2025 - Present</span>
+                            </div>
+                            <div class="timeline-company">Y-Not Design & Mfg. · On-site</div>
+                            <p class="timeline-description">Driving innovation in logistics and e-commerce supply chains by designing and implementing cutting-edge solutions. [Placeholder for detailed description].</p>
+                            <div class="timeline-tags"><span class="timeline-tag">Logistics</span><span class="timeline-tag">Supply Chain</span><span class="timeline-tag">E-commerce</span></div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg>
+                        </div>
+                        <div class="timeline-content frosted-container">
+                            <div class="timeline-header">
+                                <h3 class="timeline-title">Next-Gen Associate</h3>
+                                <span class="timeline-date">Jan 2025 - Apr 2025</span>
+                            </div>
+                            <div class="timeline-company">StemUp · Internship</div>
+                            <div class="timeline-description">
+                                <ul>
+                                    <li>Researched and analyzed the end-to-end electronics ecosystem, mapping the roles of different stakeholders.</li>
+                                    <li>Developed and implemented automated email workflows with customizable documentation to streamline communication.</li>
+                                    <li>Served on the core team for a campus drive of 1,500 students, ensuring smooth event execution.</li>
+                                </ul>
+                            </div>
+                            <div class="timeline-tags"><span class="timeline-tag">Analysis</span><span class="timeline-tag">Automation</span><span class="timeline-tag">Operations</span></div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg>
+                        </div>
+                        <div class="timeline-content frosted-container">
+                            <div class="timeline-header">
+                                <h3 class="timeline-title">Backend Interfacing (Developer)</h3>
+                                <span class="timeline-date">Oct 2023 - Nov 2023</span>
+                            </div>
+                            <div class="timeline-company">Senquire · Internship</div>
+                            <p class="timeline-description">Specialized in backend interfacing for webcams, USB, and IP cameras in a Linux environment. Successfully implemented recording features, capturing and storing data, and utilized React for frontend applications.</p>
+                            <div class="timeline-tags"><span class="timeline-tag">React</span><span class="timeline-tag">Backend</span><span class="timeline-tag">Camera Operation</span><span class="timeline-tag">Linux</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="section-wrapper">
             <div class="section-header"><h2>Awards & Honors</h2><div class="divider"></div><p>Recognition for my dedication and innovative work.</p></div>
             <div class="awards-container">
-                <div class="award-card frosted-container"><div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div><div class="award-details"><h3>Best Paper Award</h3><p class="award-issuer">IEEE-ICIITCE 2025 International Conference</p><p class="award-description">Awarded for outstanding research and novelty presented in the paper, "Hive Destruction Protocol” for Advanced Defense Systems.</p></div></div>
-                <div class="award-card frosted-container"><div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 1.5m1-1.5l1 1.5m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.155 1.707a.75.75 0 001.09 0L12 6.75l2.155 1.707a.75.75 0 001.09 0L17.25 6l3 3" /></svg></div><div class="award-details"><h3>Best Project Presenter Award</h3><p class="award-issuer">BNMIT, 2025</p><p class="award-description">Awarded for the final year project demonstration of the "Real-time Parcel Tracking System for Supply Chain Logistics."</p></div></div>
-                <div class="award-card frosted-container"><div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg></div><div class="award-details"><h3>Finalist, Inventors Challenge 2024</h3><p class="award-issuer">AICTE, India & STM</p><p class="award-description">Secured a position among the top 24 national teams out of more than 2,300 participants in this highly competitive national innovation event.</p></div></div>
-                <div class="award-card frosted-container"><div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg></div><div class="award-details"><h3>Runners-up, Recursive National Level Hackathon</h3><p class="award-issuer">Dayananda Sagar College of Engineering, 2024</p><p class="award-description">Secured second place for developing the "Intelligent Parking Management System," a novel solution presented under the Smart City theme.</p></div></div>
-                <div class="award-card frosted-container"><div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg></div><div class="award-details"><h3>Finalist, Manthan Business Idea Competition 2024</h3><p class="award-issuer">FKCCI Bengaluru</p><p class="award-description">Selected as a finalist for the business pitch of "TechTutors," a next-generation educational LMS.</p></div></div>
+                <div class="award-card frosted-container">
+                    <div class="award-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    </div>
+                    <div class="award-details">
+                        <h3>Best Paper Award</h3>
+                        <p class="award-issuer">IEEE-ICIITCE 2025 International Conference</p>
+                        <p class="award-description">Awarded for outstanding research and novelty presented in the paper, "Hive Destruction Protocol” for Advanced Defense Systems.</p>
+                    </div>
+                </div>
+
+                <div class="award-card frosted-container">
+                    <div class="award-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 1.5m1-1.5l1 1.5m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.155 1.707a.75.75 0 001.09 0L12 6.75l2.155 1.707a.75.75 0 001.09 0L17.25 6l3 3" /></svg>
+                    </div>
+                    <div class="award-details">
+                        <h3>Best Project Presenter Award</h3>
+                        <p class="award-issuer">BNMIT, 2025</p>
+                        <p class="award-description">Awarded for the final year project demonstration of the "Real-time Parcel Tracking System for Supply Chain Logistics."</p>
+                    </div>
+                </div>
+
+                <div class="award-card frosted-container">
+                    <div class="award-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                    </div>
+                    <div class="award-details">
+                        <h3>Finalist, Inventors Challenge 2024</h3>
+                        <p class="award-issuer">AICTE, India & STM</p>
+                        <p class="award-description">Secured a position among the top 24 national teams out of more than 2,300 participants in this highly competitive national innovation event.</p>
+                    </div>
+                </div>
+
+                <div class="award-card frosted-container">
+                    <div class="award-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+                    </div>
+                    <div class="award-details">
+                        <h3>Runners-up, Recursive National Level Hackathon</h3>
+                        <p class="award-issuer">Dayananda Sagar College of Engineering, 2024</p>
+                        <p class="award-description">Secured second place for developing the "Intelligent Parking Management System," a novel solution presented under the Smart City theme.</p>
+                    </div>
+                </div>
+
+                <div class="award-card frosted-container">
+                    <div class="award-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
+                    </div>
+                    <div class="award-details">
+                        <h3>Finalist, Manthan Business Idea Competition 2024</h3>
+                        <p class="award-issuer">FKCCI Bengaluru</p>
+                        <p class="award-description">Selected as a finalist for the business pitch of "TechTutors," a next-generation educational LMS.</p>
+                    </div>
+                </div>
             </div>
         </section>
-        
+
         <section class="section-wrapper">
             <div class="section-header"><h2>Publications & Presentations</h2><div class="divider"></div><p>Sharing knowledge and contributing to the community.</p></div>
             <div class="publications-container">
-                <div class="publication-card frosted-container"><div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div><div class="publication-details"><h3>Honored Presenter</h3><p class="publication-issuer">9th Biennial Supply Chain Management Conference – IIM Bangalore (2025)</p><p class="publication-description">Selected through a competitive peer-review process to present the "Unified Cognitive Orchestration System (UCOS)," a next-generation framework for modernizing port management and supply chain logistics.</p></div></div>
-                <div class="publication-card frosted-container"><div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div><div class="publication-details"><h3>Technical Speaker</h3><p class="publication-issuer">The IoT Ecosystem: Bridging Academia and Industry</p><div class="publication-description"><ul><li>Elected to deliver a technical presentation demystifying the end-to-end IoT ecosystem for an audience of students and faculty.</li><li>Acted as a knowledge bridge, translating complex academic theories into practical, industry-relevant applications and highlighting career pathways in the IoT sector.</li></ul></div></div></div>
-                <div class="publication-card frosted-container"><div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div><div class="publication-details"><h3>Professional Development Speaker & Corporate Trainer</h3><p class="publication-issuer">Corporate and Academic Workshops</p><div class="publication-description"><ul><li>Authored and delivered interactive workshops on corporate personality development, strategic networking, and effective self-branding.</li><li>Featured as a Guest Speaker at the Nexus Technical Event (BNMIT), guiding engineers on leveraging personal branding to enhance their industry readiness.</li></ul></div></div></div>
-                <div class="publication-card frosted-container"><div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div><div class="publication-details"><h3>Hive Destruction Protocol</h3><p class="publication-issuer">IITCEE Conference | 2025</p><p class="publication-citation">V. T. M, G. G. R and S. T, "Hive Destruction Protocol: An Automated Defense System Utilizing YOLO Human Recognition and Real-Time GPS Tracking," 2025 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE), Bangalore, India, 2025, pp. 1-5.</p><a href="https://ieeexplore.ieee.org/abstract/document/10915384/" class="view-paper-btn">View Paper <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a></div></div>
-                <div class="publication-card frosted-container"><div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div><div class="publication-details"><h3>Real-Time Global Parcel Tracking System</h3><p class="publication-issuer">IITCEE Conference | 2025</p><p class="publication-citation">V. T M, V. S N, U. G D, S. B.L and J. R. Munavalli, "Real-Time Global Parcel Tracking System in the Supply Chain Using RFID and GPS," 2025 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE), Bangalore, India, 2025, pp. 1-5.</p><a href="https://ieeexplore.ieee.org/abstract/document/10915357/" class="view-paper-btn">View Paper <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a></div></div>
-                <div class="publication-card frosted-container"><div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div><div class="publication-details"><h3>Efficient Farmland Protection System</h3><p class="publication-issuer">ETCC Conference | 2025</p><p class="publication-citation">S. B. L, S. N. Sunil, R. S. Bhaskar and V. TM, "Efficient Farmland Protection System Using Machine Learning Techniques for Animal Identification," 2025 International Conference on Emerging Technologies in Computing and Communication (ETCC), Bangalore, India, 2025, pp. 1-5.</p><a href="https://ieeexplore.ieee.org/abstract/document/11108414" class="view-paper-btn">View Paper <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a></div></div>
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>
+                    </div>
+                    <div class="publication-details">
+                        <h3>Honored Presenter</h3>
+                        <p class="publication-issuer">9th Biennial Supply Chain Management Conference – IIM Bangalore (2025)</p>
+                        <p class="publication-description">Selected through a competitive peer-review process to present the "Unified Cognitive Orchestration System (UCOS)," a next-generation framework for modernizing port management and supply chain logistics.</p>
+                    </div>
+                </div>
+
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>
+                    </div>
+                    <div class="publication-details">
+                        <h3>Technical Speaker</h3>
+                        <p class="publication-issuer">The IoT Ecosystem: Bridging Academia and Industry</p>
+                        <div class="publication-description">
+                            <ul>
+                                <li>Elected to deliver a technical presentation demystifying the end-to-end IoT ecosystem for an audience of students and faculty.</li>
+                                <li>Acted as a knowledge bridge, translating complex academic theories into practical, industry-relevant applications and highlighting career pathways in the IoT sector.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    </div>
+                    <div class="publication-details">
+                        <h3>Hive Destruction Protocol</h3>
+                        <p class="publication-issuer">IITCEE Conference | 2025</p>
+                        <p class="publication-citation">V. T. M, G. G. R and S. T, "Hive Destruction Protocol: An Automated Defense System Utilizing YOLO Human Recognition and Real-Time GPS Tracking," 2025 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE), Bangalore, India, 2025, pp. 1-5.</p>
+                        <a href="https://ieeexplore.ieee.org/abstract/document/10915384/" class="view-paper-btn">View Paper
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    </div>
+                    <div class="publication-details">
+                        <h3>Real-Time Global Parcel Tracking System</h3>
+                        <p class="publication-issuer">IITCEE Conference | 2025</p>
+                        <p class="publication-citation">V. T M, V. S N, U. G D, S. B.L and J. R. Munavalli, "Real-Time Global Parcel Tracking System in the Supply Chain Using RFID and GPS," 2025 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE), Bangalore, India, 2025, pp. 1-5.</p>
+                        <a href="https://ieeexplore.ieee.org/abstract/document/10915357/" class="view-paper-btn">View Paper
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                    </div>
+                    <div class="publication-details">
+                        <h3>Efficient Farmland Protection System</h3>
+                        <p class="publication-issuer">ETCC Conference | 2025</p>
+                        <p class="publication-citation">S. B. L, S. N. Sunil, R. S. Bhaskar and V. TM, "Efficient Farmland Protection System Using Machine Learning Techniques for Animal Identification," 2025 International Conference on Emerging Technologies in Computing and Communication (ETCC), Bangalore, India, 2025, pp. 1-5.</p>
+                        <a href="https://ieeexplore.ieee.org/abstract/document/11108414" class="view-paper-btn">View Paper
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                        </a>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -414,23 +483,25 @@
         </section>
 
         <section id="contact" class="section-wrapper">
-             <div class="section-header"><h2>Get In Touch</h2><div class="divider"></div><p>I'm open to collaborations and new opportunities. Let's connect.</p></div>
-             <div class="contact-container frosted-container">
-                 <div class="contact-links">
-                     <a href="mailto:vyshakmanju18@gmail.com" class="contact-link" target="_blank">
-                         <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg></div>
-                         <span>Email</span>
-                     </a>
-                     <a href="https://www.linkedin.com/in/vyshaktm180903/" class="contact-link" target="_blank">
-                         <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></div>
-                         <span>LinkedIn</span>
-                     </a>
-                     <a href="https://github.com/starkdockris" class="contact-link" target="_blank">
-                         <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3.3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-27.9-112.3-124.3 0-27.5 7.6-51.3 22.6-69.6-2.3-6.3-12.2-33.1 2.6-69.3 0 0 21.1-7.1 69.2 25.8 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c48.1-33 69.2-25.8 69.2-25.8 14.8 36.1 4.9 63 2.6 69.3 15.1 18.3 22.6 42.1 22.6 69.6 0 96.6-56.4 118-112.5 124.2 9.7 8.5 18.2 25.8 18.2 49.2 0 35.5-.3 64.3-.3 73.2 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg></div>
-                         <span>GitHub</span>
-                     </a>
-                 </div>
-             </div>
+            <div class="section-header"><h2>Get In Touch</h2><div class="divider"></div><p>I'm open to collaborations and new opportunities. Let's connect.</p></div>
+            <div class="contact-container frosted-container">
+                <div class="contact-links">
+                    <a href="mailto:vyshakmanju18@gmail.com" class="contact-link" target="_blank">
+                        <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg></div>
+                        <span>Email</span>
+                    </a>
+
+                    <a href="https://www.linkedin.com/in/vyshaktm180903/" class="contact-link" target="_blank">
+                        <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></div>
+                        <span>LinkedIn</span>
+                    </a>
+
+                    <a href="https://github.com/starkdockris" class="contact-link" target="_blank">
+                        <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3.3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-27.9-112.3-124.3 0-27.5 7.6-51.3 22.6-69.6-2.3-6.3-12.2-33.1 2.6-69.3 0 0 21.1-7.1 69.2 25.8 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c48.1-33 69.2-25.8 69.2-25.8 14.8 36.1 4.9 63 2.6 69.3 15.1 18.3 22.6 42.1 22.6 69.6 0 96.6-56.4 118-112.5 124.2 9.7 8.5 18.2 25.8 18.2 49.2 0 35.5-.3 64.3-.3 73.2 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg></div>
+                        <span>GitHub</span>
+                    </a>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -438,8 +509,6 @@
     <footer class="site-footer">
         <p>&copy; 2025 Vyshak T M. All Rights Reserved.</p>
     </footer>
-
-    
 
     <script>
         // --- Main script execution on document load ---
@@ -461,7 +530,7 @@
                         setTimeout(typeWriter, 50);
                     } else {
                         headingElement.classList.add('typing-done');
-                        headingElement.innerHTML = 'Hi, I\'m <span class="name-highlight">Vyshak T M</span>';
+                        headingElement.innerHTML = 'Hi, I\\'m <span class=\"name-highlight\">Vyshak T M</span>';
                         elementsToFadeIn.forEach(el => el.classList.add('visible'));
                     }
                 }
@@ -571,7 +640,3 @@
     </script>
 </body>
 </html>
-
-
-
-
