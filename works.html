@@ -1,1 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Works & Skills | Vyshak T M</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Serif+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* General Styling & Variables */
+        :root {
+            --primary-color: #ffffff;
+            --secondary-color: #a7a7a7;
+            --background-color: #0a0a0a;
+            --accent-color: #3d3d3d;
+            --highlight-color: #8cb4ff; /* Royal Blue */
+            --container-bg-color: rgba(18, 18, 18, 0.75);
+            --hero-font: 'Source Serif Pro', serif;
+            --base-font: 'Inter', sans-serif;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--background-color);
+            color: var(--primary-color);
+            font-family: var(--base-font);
+            overflow-x: hidden;
+            padding: 0 2rem;
+        }
+
+        /* The Interactive Background Canvas */
+        #circuit-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        /* General Container */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+        
+        /* Section Wrapper */
+        .section-wrapper { position: relative; z-index: 1; padding: 4rem 0; }
+
+        /* Header & Navigation */
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 4rem 0 2rem 0; 
+            animation: fadeInDown 1s ease-out; 
+            max-width: 1200px; margin: 0 auto;
+        }
+        .logo a { 
+            text-decoration: none; 
+            display: flex;
+            align-items: center;
+        }
+        .logo-img {
+            height: 80px; 
+            width: auto;
+        }
+        nav { display: flex; align-items: center; }
+        nav ul { list-style: none; display: flex; }
+        nav ul li { margin-left: 2.5rem; }
+        nav a { color: var(--secondary-color); text-decoration: none; font-size: 1rem; transition: color 0.3s ease; }
+        nav a:not(.button-primary):hover { color: var(--primary-color); }
+        .button-primary { margin-left: 2.5rem; padding: 0.75rem 1.5rem; background-color: var(--primary-color); color: var(--background-color); border-radius: 50px; font-weight: 500; text-decoration: none; transition: transform 0.3s ease, background-color 0.3s ease; }
+        .button-primary:hover { transform: scale(1.05); background-color: #f0f0f0; }
+        
+        /* Frosted Glass Container Base Style */
+        .frosted-container { background: var(--container-bg-color); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--accent-color); border-radius: 16px; }
+
+        /* Section Header */
+        .section-header { text-align: center; margin-bottom: 4rem; }
+        .section-header h2 { font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-color); }
+        .section-header .divider { width: 80px; height: 4px; background-color: var(--highlight-color); margin: 0.5rem auto 1rem; border-radius: 2px; }
+        .section-header p { font-size: 1.1rem; color: var(--secondary-color); max-width: 700px; margin: 0 auto; }
+        
+        /* Main Grid Layout */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Left Column: Projects */
+        .projects-section { display: flex; flex-direction: column; gap: 2rem; }
+        .project-card { display: flex; flex-direction: column; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease; }
+        .project-card:hover { transform: translateY(-5px); border-color: var(--highlight-color); }
+        .project-image { 
+            width: 100%; 
+            aspect-ratio: 21 / 9; /* MODIFIED: Makes the image container wider/shorter */
+            background-color: var(--accent-color); 
+            overflow: hidden; 
+            border-radius: 16px 16px 0 0; 
+        }
+        .project-image img { width: 100%; height: 100%; object-fit: cover; }
+        .project-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
+        .project-title { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .project-description { color: var(--secondary-color); line-height: 1.6; flex-grow: 1; margin-bottom: 1.5rem; }
+        .project-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem; }
+        .project-tag { background: var(--accent-color); color: var(--secondary-color); padding: 0.25rem 0.75rem; border-radius: 6px; font-size: 0.8rem; }
+        .project-links { display: flex; gap: 1rem; margin-top: auto; }
+        .project-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; border: 1px solid var(--accent-color); color: var(--secondary-color); text-decoration: none; border-radius: 50px; font-weight: 500; transition: all 0.3s ease; }
+        .project-link.primary { border-color: var(--highlight-color); color: var(--highlight-color); }
+        .project-link:hover { background-color: var(--accent-color); color: var(--primary-color); border-color: var(--accent-color); }
+        .project-link.primary:hover { background-color: var(--highlight-color); color: var(--background-color); border-color: var(--highlight-color); }
+        .project-link svg { width: 18px; height: 18px; }
+
+        /* Right Column: Skills Panel */
+        .skills-panel { display: flex; flex-direction: column; gap: 1rem; position: sticky; top: 2rem; }
+        .panel-header { font-size: 1.8rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem; padding-left: 1rem; }
+        .skill-card { padding: 1.5rem; transition: transform .35s cubic-bezier(.2,.9,.2,1), border-color 0.3s ease; }
+        .skill-card:hover { transform: translateY(-8px); border-color: var(--highlight-color); }
+        .skill-title { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1.1rem; }
+        .skill-desc { color: var(--secondary-color); font-size: 0.9rem; margin-top: 8px; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .chip { padding: 6px 12px; background: var(--accent-color); border-radius: 999px; font-weight: 500; font-size: 0.8rem; color: var(--secondary-color); }
+        .chip::before { content:''; width:6px;height:6px;border-radius:50%; display:inline-block; margin-right:8px; vertical-align:middle; background: var(--highlight-color); box-shadow:0 0 12px var(--highlight-color); }
+        .bar-wrap { margin-top: 12px; }
+        .bar { height: 8px; background: rgba(0,0,0,0.2); border-radius: 999px; overflow: hidden; }
+        .bar > i { display: block; height: 100%; width: 0%; border-radius: 999px; background: var(--highlight-color); box-shadow: 0 0 18px rgba(140, 180, 255, 0.6); transition: width 1.6s cubic-bezier(.2,.9,.2,1); }
+        .meta { display: flex; justify-content: space-between; color: var(--secondary-color); font-size: 12px; margin-top: 6px; }
+        
+        /* Talks and Research Section */
+        .research-container { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+        .research-card { display: flex; gap: 2rem; padding: 2rem; transition: border-color 0.3s ease; }
+        .research-card:hover { border-color: var(--highlight-color); }
+        .research-icon { flex-shrink: 0; color: var(--highlight-color); }
+        .research-icon svg { width: 32px; height: 32px; }
+        .research-details h3 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.25rem; }
+        .research-issuer { color: var(--secondary-color); font-size: 1rem; margin-bottom: 1rem; font-style: italic; }
+        .research-description { color: var(--secondary-color); line-height: 1.7; }
+        .research-description ul { margin-top: 1rem; list-style-type: disc; padding-left: 20px; }
+        .research-description ul li { margin-bottom: 0.5rem; }
+        .view-document-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 0.6rem 1.2rem; border: 1px solid var(--accent-color); color: var(--highlight-color); text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease; }
+        .view-document-btn:hover { background-color: var(--highlight-color); color: var(--background-color); }
+        .view-document-btn svg { width: 18px; height: 18px; }
+
+        /* Footer */
+        .site-footer { text-align: center; padding: 2rem; color: var(--secondary-color); font-size: 0.9rem; border-top: 1px solid var(--accent-color); margin-top: 4rem; }
+
+        /* Responsive */
+        @media (max-width:980px){
+            main { grid-template-columns: 1fr; }
+            .skills-panel { order: -1; position: relative; top: 0; }
+        }
+        @media (max-width: 768px) {
+            .projects-grid { grid-template-columns: 1fr; }
+            .research-card { flex-direction: column; gap: 1rem; padding: 1.5rem; }
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <canvas id="circuit-background"></canvas>
+
+    <header>
+        <div class="logo">
+            <a href="index.html">
+                <img src="VKL1.png" alt="Vyshak T M Logo" class="logo-img">
+            </a>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="works.html" style="color: var(--primary-color);">Works & Skills</a></li> 
+            </ul>
+            <a href="index.html#contact" class="button-primary">Get In Touch</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="projects-section">
+            <div class="section-header" style="text-align: left; margin-bottom: 0;">
+                <h2 style="font-size: 2.5rem;">My Works</h2>
+                <p style="margin-left: 0; max-width: 100%;">A selection of projects that showcase my passion for building practical, real-world solutions.</p>
+            </div>
+            <!-- Projects Grid -->
+            <div class="project-card frosted-container">
+                <div class="project-image"><img src="pts.png" alt="Real-time Parcel Tracking System"></div>
+                <div class="project-content">
+                    <h3 class="project-title">Real-time Parcel Tracking System</h3>
+                    <p class="project-description">A comprehensive system for supply chain logistics, utilizing RFID and GPS to provide real-time global tracking of parcels from origin to destination.</p>
+                    <div class="project-tags"><span class="project-tag">RFID</span><span class="project-tag">GPS</span><span class="project-tag">Supply Chain</span><span class="project-tag">IoT</span></div>
+                    <div class="project-links"><a href="https://ieeexplore.ieee.org/abstract/document/10915357/" class="project-link primary">View <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a></div>
+                </div>
+            </div>
+            <div class="project-card frosted-container">
+                <div class="project-image"><img src="ipms.png" alt="Intelligent Parking Management System"></div>
+                <div class="project-content">
+                    <h3 class="project-title">Intelligent Parking Management System</h3>
+                    <p class="project-description">A hackathon-winning Smart City solution for efficient parking management, utilizing sensors and real-time data to guide drivers to available spots.</p>
+                    <div class="project-tags"><span class="project-tag">Smart City</span><span class="project-tag">IoT</span><span class="project-tag">Sensors</span><span class="project-tag">Real-Time Data</span></div>
+                    <div class="project-links"><a href="https://github.com/starkdockris/IPMS-R-" class="project-link primary">View <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a></div>
+                </div>
+            </div>
+            <div class="project-card frosted-container">
+                <div class="project-image"><img src="A.png" alt="Hyperconnected Futures: The IoT Ecosystem Unleashed"></div>
+                <div class="project-content">
+                    <h3 class="project-title">Architecting a Global IoT System for Mission-Critical Indoor Air Quality Monitoring (Case Study)</h3>
+                    <p class="project-description">The Real-Time Problem: Why Indoor Air Monitoring is Mission-Critical </p>
+                    <div class="project-tags"><span class="project-tag">Intelligent Systems</span><span class="project-tag">IoT</span><span class="project-tag">Sensors</span><span class="project-tag">IEEE</span></div>
+                    <div class="project-links"><a href="https://drive.google.com/file/d/183k0ZOLo3tVSrppmFu1A18bH42r_I8N1/view?usp=sharing" class="project-link primary">View <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a></div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="skills-panel">
+          <h3 class="panel-header">Skills & Expertise</h3>
+          <div class="skill-card frosted-container">
+            <div class="skill-title">Soft Skills</div><div class="skill-desc">Leadership, strategy, communication, and collaborative delivery.</div><div class="chips" id="softChips"></div>
+          </div>
+          <div class="skill-card frosted-container">
+            <div class="skill-title">Programming Languages</div><div class="skill-desc">Core languages for algorithms, systems, and web.</div><div class="chips" id="langChips"></div><div class="bar-wrap"><div class="meta"><span>Proficiency</span><span>90%</span></div><div class="bar"><i data-w="90"></i></div></div>
+          </div>
+          <div class="skill-card frosted-container">
+            <div class="skill-title">Machine Learning & Data</div><div class="skill-desc">Frameworks for computer vision, deep learning and classical ML.</div><div class="chips" id="mlChips"></div><div class="bar-wrap"><div class="meta"><span>Hands-on</span><span>86%</span></div><div class="bar"><i data-w="86"></i></div></div>
+          </div>
+          <div class="skill-card frosted-container">
+            <div class="skill-title">Databases & Tools</div><div class="skill-desc">Relational, NoSQL, and daily-driver development tools.</div><div class="chips" id="dbChips"></div><div class="bar-wrap"><div class="meta"><span>Familiarity</span><span>88%</span></div><div class="bar"><i data-w="88"></i></div></div>
+          </div>
+        </aside>
+    </main>
+
+    <section class="section-wrapper">
+        <div class="section-header"><h2>My Talks, Seminars & Research</h2><div class="divider"></div><p>A collection of my published works and speaking engagements.</p></div>
+        <div class="research-container">
+            <div class="research-card frosted-container"><div class="research-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div><div class="research-details"><h3>Honored Presenter</h3><p class="research-issuer">IIM Bangalore | 9th Biennial SCM Conference (2025)</p><p class="research-description">Selected to present the "Unified Cognitive Orchestration System (UCOS)," a next-gen framework for modernizing port management.</p></div></div>
+            <div class="research-card frosted-container"><div class="research-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div><div class="research-details"><h3>Technical & Corporate Speaker</h3><p class="research-issuer">Various Academic & Technical Events</p><div class="research-description"><ul><li>Delivered presentations demystifying the end-to-end IoT ecosystem for students and faculty.</li><li>Authored and delivered workshops on corporate personality development, networking, and personal branding.</li></ul></div><a href="https://www.canva.com/design/DAGzKp7x-fk/Q2mgZ83jVgY5s6Bti6uFSw/view?utm_content=DAGzKp7x-fk&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h67194fe85e" class="view-document-btn">View Document <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.122 2.122l7.81-7.81" /></svg></a></div></div>
+            <div class="research-card frosted-container"><div class="research-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div><div class="research-details"><h3>Hive Destruction Protocol</h3><p class="research-issuer">IITCEE Conference | 2025</p><p class="research-description">An Automated Defense System Utilizing YOLO Human Recognition and Real-Time GPS Tracking.</p><a href="https://ieeexplore.ieee.org/abstract/document/10915384" class="view-document-btn">View Document <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.122 2.122l7.81-7.81" /></svg></a></div></div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 Vyshak T M. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const skills = {
+              soft: ["Leadership","Communication","Strategy","Problem Solving","Critical Thinking","Team Collaboration","Project Management","Adaptability"],
+              languages: ["Python","C/C++","SQL","JavaScript","HTML/CSS"],
+              ml: ["TensorFlow","OpenCV","YOLO","PyTorch","Scikit-learn","Pandas","NumPy"],
+              db: ["SQL","MongoDB","Firebase","MySQL","PostgreSQL", "Git", "Django", "React", "Flask", "FastAPI", "Node.js", "AWS IoT"],
+            };
+            function makeChips(list, id){ const c = document.getElementById(id); if(c) list.forEach(t => { const d=document.createElement('div'); d.className='chip'; d.textContent=t; c.appendChild(d); }); }
+            makeChips(skills.soft,'softChips'); makeChips(skills.languages,'langChips'); makeChips(skills.ml,'mlChips'); makeChips(skills.db,'dbChips');
+            document.querySelectorAll('.bar > i').forEach(el => { const w = el.getAttribute('data-w') || 50; setTimeout(() => el.style.width = w + '%', 300); });
+        });
+        const canvas = document.getElementById('circuit-background'); const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth; let height = canvas.height = window.innerHeight;
+        window.addEventListener('resize', () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; init(); });
+        const mouse = { x: undefined, y: undefined, radius: 150 };
+        window.addEventListener('mousemove', (e) => { mouse.x = e.x; mouse.y = e.y; }); window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        class Particle { constructor(x, y, dX, dY, s) { this.x=x; this.y=y; this.directionX=dX; this.directionY=dY; this.size=s; } draw() { ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2,false); ctx.fillStyle='rgba(100,100,100,0.5)'; ctx.fill(); } update() { if(this.x>width||this.x<0){this.directionX=-this.directionX;} if(this.y>height||this.y<0){this.directionY=-this.directionY;} this.x+=this.directionX; this.y+=this.directionY; this.draw(); } }
+        let particlesArray; function init() { particlesArray=[]; let num = (width*height)/9000; for(let i=0; i<num; i++){ let s=(Math.random()*1.5)+1; let x=(Math.random()*((width-s*2)-(s*2))+s*2); let y=(Math.random()*((height-s*2)-(s*2))+s*2); let dX=(Math.random()*0.4)-0.2; let dY=(Math.random()*0.4)-0.2; particlesArray.push(new Particle(x,y,dX,dY,s)); } }
+        function connect() { let opacity=1; for(let a=0; a<particlesArray.length; a++){ for(let b=a; b<particlesArray.length; b++){ let dist=((particlesArray[a].x-particlesArray[b].x)*(particlesArray[a].x-particlesArray[b].x))+((particlesArray[a].y-particlesArray[b].y)*(particlesArray[a].y-particlesArray[b].y)); if(dist<(width/7)*(height/7)){ opacity=1-(dist/20000); let dx=mouse.x-particlesArray[a].x; let dy=mouse.y-particlesArray[a].y; let mouseDist=Math.sqrt(dx*dx+dy*dy); if(mouseDist<mouse.radius){ ctx.strokeStyle=`rgba(255,255,255,${opacity})`; }else{ ctx.strokeStyle=`rgba(100,100,100,${opacity})`; } ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(particlesArray[a].x,particlesArray[a].y); ctx.lineTo(particlesArray[b].x,particlesArray[b].y); ctx.stroke(); } } } }
+        function animate() { requestAnimationFrame(animate); ctx.clearRect(0,0,width,height); for(let i=0; i<particlesArray.length; i++){ particlesArray[i].update(); } connect(); }
+        init(); animate();
+    </script>
+</body>
+</html>
