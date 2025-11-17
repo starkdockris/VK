@@ -133,16 +133,42 @@
         .linkedin-link svg { width: 18px; height: 18px; }
 
         /* Gallery Section */
-        .gallery-track { display: flex; width: fit-content; animation: scroll 30s linear infinite; }
-        .gallery-container:hover .gallery-track { animation-play-state: paused; }
+        .gallery-container {
+            overflow: hidden;
+            width: 100%;
+            padding: 2rem 0;
+        }
+        .gallery-track { 
+            display: flex; 
+            width: fit-content; 
+            animation: scroll 30s linear infinite; 
+        }
+        .gallery-container:hover .gallery-track { 
+            animation-play-state: paused; 
+        }
         .gallery-item {
-            height: 180px; width: 320px; margin: 0 2rem; display: flex; align-items: center; justify-content: center; border-radius: 16px; background-color: var(--accent-color); overflow: hidden;
+            height: 180px; 
+            width: 320px; 
+            margin: 0 2rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 16px; 
+            background-color: var(--accent-color); 
+            overflow: hidden;
         }
         .gallery-item img {
-            width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); opacity: 0.7; transition: all 0.3s ease-in-out;
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            filter: grayscale(1); 
+            opacity: 0.7; 
+            transition: all 0.3s ease-in-out;
         }
         .gallery-item:hover img {
-            filter: grayscale(0); opacity: 1; transform: scale(1.1);
+            filter: grayscale(0); 
+            opacity: 1; 
+            transform: scale(1.1);
         }
 
         /* Experience Section */
@@ -353,7 +379,7 @@
             </div>
         </section>
 
-        <section class="section-wrapper">
+        <section class="section-wrapper" id="about">
             <div class="about-container frosted-container">
                 <div class="section-header"><h2>Innovative Engineering & Product Design</h2><div class="divider"></div><p>Merging technical expertise with creative problem-solving for efficient, user-focused products.</p></div>
                 <div class="about-content">
@@ -375,16 +401,18 @@
             </div>
         </section>
         
-        <div class="gallery-track">
-            <div class="gallery-item"><img src="pic/DSC_0221.JPG" alt="Logo 1"></div>
-            <div class="gallery-item"><img src="pic/DSC_0358.JPG" alt="Logo 2"></div>
-            <div class="gallery-item"><img src="pic/g1.png" alt="Logo 3"></div>
-            <div class="gallery-item"><img src="pic/g2.png" alt="Logo 4"></div>
-            <div class="gallery-item"><img src="pic/g3.png" alt="Logo 5"></div>
-            <div class="gallery-item"><img src="pic/g4.png" alt="Logo 6"></div>
+        <div class="gallery-container">
+            <div class="gallery-track">
+                <div class="gallery-item"><img src="pic/DSC-0221.jpg" alt="Logo 1"></div>
+                <div class="gallery-item"><img src="pic/DSC-0358.jpg" alt="Logo 2"></div>
+                <div class="gallery-item"><img src="pic/g1.png" alt="Logo 3"></div>
+                <div class="gallery-item"><img src="pic/g2.png" alt="Logo 4"></div>
+                <div class="gallery-item"><img src="pic/g3.png" alt="Logo 5"></div>
+                <div class="gallery-item"><img src="pic/g4.png" alt="Logo 6"></div>
+            </div>
         </div>
 
-        <section class="section-wrapper">
+        <section class="section-wrapper" id="experience">
             <div class="section-header"><h2>Work Experience</h2><div class="divider"></div><p>A journey through my professional career and key achievements</p></div>
             <div class="experience-container">
                  <!-- Experience content remains the same -->
@@ -392,6 +420,16 @@
         </section>
         
         <!-- All other sections (Awards, Publications, Contact, etc.) remain here -->
+        <section class="section-wrapper" id="contact">
+            <div class="contact-container frosted-container">
+                <div class="section-header"><h2>Get In Touch</h2><div class="divider"></div><p>I'm always open to discussing new projects, creative ideas, or opportunities to be part of an ambitious vision. Feel free to reach out.</p></div>
+                <div class="contact-links">
+                    <a href="#" class="contact-link"><div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></div><span>Email</span></a>
+                    <a href="#" class="contact-link"><div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg></div><span>Phone</span></a>
+                    <a href="#" class="contact-link"><div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></div><span>GitHub</span></a>
+                </div>
+            </div>
+        </section>
 
     </main>
 
