@@ -175,8 +175,8 @@
         .experience-container { max-width: 900px; margin: 0 auto; }
         .timeline-item { position: relative; padding-left: 72px; margin-bottom: 3rem; }
         .timeline-item:last-child { margin-bottom: 0; }
-        .timeline-item::after { content: ''; position: absolute; top: 48px; left: 23px; width: 2px; height: 100%; background-color: var(--accent-color); }
-        .timeline-item:last-child::after { display: none; }
+        .timeline-item::before { content: ''; position: absolute; top: 24px; left: 23px; width: 2px; height: calc(100% - 24px); background-color: var(--accent-color); }
+        .timeline-item:last-child::before { display: none; }
         .timeline-icon { position: absolute; left: 0; top: 0; width: 48px; height: 48px; border-radius: 50%; background: rgba(140, 180, 255, 0.1); color: var(--highlight-color); display: flex; align-items: center; justify-content: center; border: 1px solid var(--accent-color); z-index: 1; }
         .timeline-icon svg { width: 24px; height: 24px; }
         .timeline-content { padding: 2rem; transition: border-color 0.3s ease; }
@@ -193,16 +193,17 @@
         
         /* Awards & Publications */
         .awards-container, .publications-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
-        .award-card, .publication-card { display: flex; gap: 2rem; padding: 2rem; transition: border-color 0.3s ease; }
+        .award-card, .publication-card { display: flex; align-items: flex-start; gap: 2rem; padding: 2rem; transition: border-color 0.3s ease; }
         .award-card:hover, .publication-card:hover { border-color: var(--highlight-color); }
-        .award-icon, .publication-icon { flex-shrink: 0; color: var(--highlight-color); }
+        .award-icon, .publication-icon { flex-shrink: 0; color: var(--highlight-color); margin-top: 5px; }
         .award-icon svg, .publication-icon svg { width: 32px; height: 32px; }
+        .award-details, .publication-details { flex: 1; }
         .award-details h3, .publication-details h3 { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.25rem; }
         .award-issuer, .publication-issuer { color: var(--secondary-color); font-size: 1rem; margin-bottom: 1rem; font-style: italic; }
         .award-description, .publication-description { color: var(--secondary-color); line-height: 1.7; }
         .publication-description ul { margin-top: 1rem; list-style-type: disc; padding-left: 20px; }
         .publication-description ul li { margin-bottom: 0.5rem; }
-        .publication-citation { font-family: monospace; font-size: 0.9rem; line-height: 1.6; word-break: break-all; }
+        .publication-citation { font-family: monospace; font-size: 0.9rem; line-height: 1.6; word-break: break-word; background: rgba(0,0,0,0.2); padding: 0.5rem 1rem; border-radius: 8px; margin-top: 1rem;}
         .view-paper-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1.5rem; padding: 0.6rem 1.2rem; border: 1px solid var(--accent-color); color: var(--highlight-color); text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease; }
         .view-paper-btn:hover { background-color: var(--highlight-color); color: var(--background-color); }
         .view-paper-btn svg { width: 18px; height: 18px; }
@@ -250,55 +251,8 @@
             /* Header and Mobile Navigation */
             header { padding: 1.5rem 0; }
             .logo-img { height: 60px; }
-            .mobile-menu-button {
-                display: block;
-                background: none;
-                border: none;
-                cursor: pointer;
-                padding: 0;
-                z-index: 1001;
-            }
-            .mobile-menu-button .hamburger-icon {
-                width: 30px;
-                height: 22px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-            .mobile-menu-button .line {
-                display: block;
-                width: 100%;
-                height: 3px;
-                background-color: var(--primary-color);
-                border-radius: 3px;
-                transition: all 0.3s ease-in-out;
-            }
-            body.nav-open .mobile-menu-button .line-1 { transform: rotate(45deg) translate(7px, 7px); }
-            body.nav-open .mobile-menu-button .line-2 { opacity: 0; }
-            body.nav-open .mobile-menu-button .line-3 { transform: rotate(-45deg) translate(6px, -6px); }
-            
-            nav {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.95);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                transform: translateX(100%);
-                transition: transform 0.4s ease-in-out;
-                z-index: 1000;
-            }
-            body.nav-open nav { transform: translateX(0); }
-            nav ul { flex-direction: column; align-items: center; padding: 0; }
-            nav ul li { margin: 1.5rem 0; margin-left: 0; }
-            nav a { font-size: 1.5rem; }
-            .button-primary { margin: 1.5rem 0; margin-left: 0; font-size: 1.2rem; }
+            nav ul { display: none; }
+            .button-primary { margin-left: auto; }
 
             /* Hero Section */
             .hero { padding: 4rem 0; }
@@ -309,9 +263,10 @@
             .about-image { width: 200px; height: 200px; }
             .timeline-item { padding-left: 60px; }
             .timeline-icon { width: 40px; height: 40px; left: 0; }
-            .timeline-item::after { left: 19px; }
+            .timeline-item::before { left: 19px; }
             .timeline-content { padding: 1.5rem; }
-            .award-card, .publication-card { flex-direction: column; gap: 1rem; padding: 1.5rem; }
+            .award-card, .publication-card { flex-direction: column; gap: 1.5rem; padding: 1.5rem; text-align: center; align-items: center;}
+            .award-icon, .publication-icon { margin-top: 0; }
             .contact-container { padding: 2.5rem 1.5rem; }
             .slogan-section { padding: 4rem 1rem; }
         }
@@ -329,15 +284,6 @@
             </a>
         </div>
         
-        <!-- This is the Mobile Menu Button (Hamburger) -->
-        <button class="mobile-menu-button" aria-label="Open navigation menu">
-            <span class="hamburger-icon">
-                <span class="line line-1"></span>
-                <span class="line line-2"></span>
-                <span class="line line-3"></span>
-            </span>
-        </button>
-
         <nav id="main-nav">
             <ul>
                 <li><a href="works.html">Works & Skills</a></li>
@@ -347,7 +293,6 @@
     </header>
 
     <main>
-        <!-- The rest of your main content remains exactly the same -->
         <section class="hero container">
             <p class="hero-intro fade-in-after-typing">Imagination has no boundaries just explore</p>
             <h1 id="typing-heading">Hi, I'm Vyshak T M</h1>
@@ -395,7 +340,7 @@
                             <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>National-Level Recognized Engineer</li>
                             <li><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>High-Influence Community Builder</li>
                         </ul>
-                        <a href="#" class="linkedin-link">View LinkedIn Profile <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /></svg></a>
+                        <a href="https://www.linkedin.com/in/vyshaktm180903/" target="_blank" class="linkedin-link">View LinkedIn Profile <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" /><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" /></svg></a>
                     </div>
                 </div>
             </div>
@@ -403,30 +348,146 @@
         
         <div class="gallery-container">
             <div class="gallery-track">
-                <div class="gallery-item"><img src="pic/DSC_0221.jpg" alt="Logo 1"></div>
-                <div class="gallery-item"><img src="pic/DSC_0358.jpg" alt="Logo 2"></div>
-                <div class="gallery-item"><img src="pic/g1.png" alt="Logo 3"></div>
-                <div class="gallery-item"><img src="pic/g2.png" alt="Logo 4"></div>
-                <div class="gallery-item"><img src="pic/g3.png" alt="Logo 5"></div>
-                <div class="gallery-item"><img src="pic/g4.png" alt="Logo 6"></div>
+                <div class="gallery-item"><img src="pic/DSC_0221.jpg" alt="Gallery Image 1"></div>
+                <div class="gallery-item"><img src="pic/DSC_0358.jpg" alt="Gallery Image 2"></div>
+                <div class="gallery-item"><img src="pic/g1.png" alt="Gallery Image 3"></div>
+                <div class="gallery-item"><img src="pic/g2.png" alt="Gallery Image 4"></div>
+                <div class="gallery-item"><img src="pic/g3.png" alt="Gallery Image 5"></div>
+                <div class="gallery-item"><img src="hpic/g4.png" alt="Gallery Image 6"></div>
             </div>
         </div>
 
         <section class="section-wrapper" id="experience">
             <div class="section-header"><h2>Work Experience</h2><div class="divider"></div><p>A journey through my professional career and key achievements</p></div>
             <div class="experience-container">
-                 <!-- Experience content remains the same -->
+                <div class="timeline-item">
+                    <div class="timeline-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25A2.25 2.25 0 015.25 3h4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                    <div class="timeline-content frosted-container">
+                        <div class="timeline-header"><h3 class="timeline-title">Logistics | E-commerce Supply Chain</h3><span class="timeline-date">Apr 2025 - Present</span></div>
+                        <div class="timeline-company">Y-Not Design & Mfg. · On-site</div>
+                        <p class="timeline-description">Driving innovation in logistics and e-commerce supply chains by designing and implementing cutting-edge solutions for streamlined operations and enhanced efficiency.</p>
+                        <div class="timeline-tags"><span class="timeline-tag">Logistics</span><span class="timeline-tag">Supply Chain</span><span class="timeline-tag">E-commerce</span></div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" /></svg></div>
+                    <div class="timeline-content frosted-container">
+                        <div class="timeline-header"><h3 class="timeline-title">Next-Gen Associate</h3><span class="timeline-date">Jan 2025 - Apr 2025</span></div>
+                        <div class="timeline-company">StemUp · Internship</div>
+                        <div class="timeline-description"><ul><li>Researched and analyzed the end-to-end electronics ecosystem, mapping the roles of different stakeholders.</li><li>Developed and implemented automated email workflows with customizable documentation to streamline communication.</li><li>Served on the core team for a campus drive of 1,500 students, ensuring smooth event execution.</li></ul></div>
+                        <div class="timeline-tags"><span class="timeline-tag">Analysis</span><span class="timeline-tag">Automation</span><span class="timeline-tag">Operations</span></div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z" /></svg></div>
+                    <div class="timeline-content frosted-container">
+                        <div class="timeline-header"><h3 class="timeline-title">Backend Interfacing (Developer)</h3><span class="timeline-date">Oct 2023 - Nov 2023</span></div>
+                        <div class="timeline-company">Senquire · Internship</div>
+                        <p class="timeline-description">Specialized in backend interfacing for webcams, USB, and IP cameras in a Linux environment. Successfully implemented recording features, capturing and storing data, and utilized React for frontend applications.</p>
+                        <div class="timeline-tags"><span class="timeline-tag">React</span><span class="timeline-tag">Backend</span><span class="timeline-tag">Camera Operation</span><span class="timeline-tag">Linux</span></div>
+                    </div>
+                </div>
             </div>
         </section>
         
-        <!-- All other sections (Awards, Publications, Contact, etc.) remain here -->
-        <section class="section-wrapper" id="contact">
-            <div class="contact-container frosted-container">
+        <section class="section-wrapper">
+            <div class="section-header"><h2>Awards & Honors</h2><div class="divider"></div><p>Recognition for my dedication and innovative work.</p></div>
+            <div class="awards-container">
+                <div class="award-card frosted-container">
+                    <div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div>
+                    <div class="award-details">
+                        <h3>Best Paper Award</h3><p class="award-issuer">IEEE-ICIITCE 2025 International Conference</p><p class="award-description">Awarded for outstanding research and novelty presented in the paper, "Hive Destruction Protocol” for Advanced Defense Systems.</p>
+                    </div>
+                </div>
+                <div class="award-card frosted-container">
+                    <div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 1.5m1-1.5l1 1.5m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.155 1.707a.75.75 0 001.09 0L12 6.75l2.155 1.707a.75.75 0 001.09 0L17.25 6l3 3" /></svg></div>
+                    <div class="award-details">
+                        <h3>Best Project Presenter Award</h3><p class="award-issuer">BNMIT, 2025</p><p class="award-description">Awarded for the final year project demonstration of the "Real-time Parcel Tracking System for Supply Chain Logistics."</p>
+                    </div>
+                </div>
+                <div class="award-card frosted-container">
+                    <div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg></div>
+                    <div class="award-details">
+                        <h3>Finalist, Inventors Challenge 2024</h3><p class="award-issuer">AICTE, India & STM</p><p class="award-description">Secured a position among the top 24 national teams out of more than 2,300 participants in this highly competitive national innovation event.</p>
+                    </div>
+                </div>
+                <div class="award-card frosted-container">
+                    <div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg></div>
+                    <div class="award-details">
+                        <h3>Runners-up, Recursive National Level Hackathon</h3><p class="award-issuer">Dayananda Sagar College of Engineering, 2024</p><p class="award-description">Secured second place for developing the "Intelligent Parking Management System," a novel solution presented under the Smart City theme.</p>
+                    </div>
+                </div>
+                <div class="award-card frosted-container">
+                    <div class="award-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg></div>
+                    <div class="award-details">
+                        <h3>Finalist, Manthan Business Idea Competition 2024</h3><p class="award-issuer">FKCCI Bengaluru</p><p class="award-description">Selected as a finalist for the business pitch of "TechTutors," a next-generation educational LMS.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-wrapper">
+            <div class="section-header"><h2>Publications & Presentations</h2><div class="divider"></div><p>Sharing knowledge and contributing to the community.</p></div>
+            <div class="publications-container">
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div>
+                    <div class="publication-details">
+                        <h3>Honored Presenter</h3><p class="publication-issuer">9th Biennial Supply Chain Management Conference – IIM Bangalore (2025)</p><p class="publication-description">Selected through a competitive peer-review process to present the "Unified Cognitive Orchestration System (UCOS)," a next-generation framework for modernizing port management and supply chain logistics.</p>
+                    </div>
+                </div>
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div>
+                    <div class="publication-details">
+                        <h3>Technical Speaker</h3><p class="publication-issuer">The IoT Ecosystem: Bridging Academia and Industry</p><div class="publication-description"><ul><li>Elected to deliver a technical presentation demystifying the end-to-end IoT ecosystem for an audience of students and faculty.</li><li>Acted as a knowledge bridge, translating complex academic theories into practical, industry-relevant applications and highlighting career pathways in the IoT sector.</li></ul></div>
+                    </div>
+                </div>
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg></div>
+                    <div class="publication-details">
+                        <h3>Professional Development Speaker & Corporate Trainer</h3><p class="publication-issuer">Corporate and Academic Workshops</p><div class="publication-description"><ul><li>Authored and delivered interactive workshops on corporate personality development, strategic networking, and effective self-branding.</li><li>Featured as a Guest Speaker at the Nexus Technical Event (BNMIT), guiding engineers on leveraging personal branding to enhance their industry readiness.</li></ul></div>
+                    </div>
+                </div>
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div>
+                    <div class="publication-details">
+                        <h3>Hive Destruction Protocol</h3><p class="publication-issuer">IITCEE Conference | 2025</p><p class="publication-citation">V. T. M, G. G. R and S. T, "Hive Destruction Protocol: An Automated Defense System Utilizing YOLO Human Recognition and Real-Time GPS Tracking," 2025 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE), Bangalore, India, 2025, pp. 1-5.</p><a href="https://ieeexplore.ieee.org/abstract/document/10915384/" target="_blank" class="view-paper-btn">View Paper <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a>
+                    </div>
+                </div>
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div>
+                    <div class="publication-details">
+                        <h3>Real-Time Global Parcel Tracking System</h3><p class="publication-issuer">IITCEE Conference | 2025</p><p class="publication-citation">V. T M, V. S N, U. G D, S. B.L and J. R. Munavalli, "Real-Time Global Parcel Tracking System in the Supply Chain Using RFID and GPS," 2025 International Conference on Intelligent and Innovative Technologies in Computing, Electrical and Electronics (IITCEE), Bangalore, India, 2025, pp. 1-5.</p><a href="https://ieeexplore.ieee.org/abstract/document/10915357/" target="_blank" class="view-paper-btn">View Paper <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a>
+                    </div>
+                </div>
+                <div class="publication-card frosted-container">
+                    <div class="publication-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg></div>
+                    <div class="publication-details">
+                        <h3>Efficient Farmland Protection System</h3><p class="publication-issuer">ETCC Conference | 2025</p><p class="publication-citation">S. B. L, S. N. Sunil, R. S. Bhaskar and V. TM, "Efficient Farmland Protection System Using Machine Learning Techniques for Animal Identification," 2025 International Conference on Emerging Technologies in Computing and Communication (ETCC), Bangalore, India, 2025, pp. 1-5.</p><a href="https://ieeexplore.ieee.org/abstract/document/11108414" target="_blank" class="view-paper-btn">View Paper <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-wrapper slogan-section">
+            <h2 class="slogan-text">Let's build the future, <span>one intelligent system at a time.</span></h2>
+        </section>
+        
+        <section id="contact" class="section-wrapper">
+             <div class="contact-container frosted-container">
                 <div class="section-header"><h2>Get In Touch</h2><div class="divider"></div><p>I'm always open to discussing new projects, creative ideas, or opportunities to be part of an ambitious vision. Feel free to reach out.</p></div>
                 <div class="contact-links">
-                    <a href="#" class="contact-link"><div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></div><span>Email</span></a>
-                    <a href="#" class="contact-link"><div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg></div><span>Phone</span></a>
-                    <a href="#" class="contact-link"><div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></div><span>GitHub</span></a>
+                    <a href="mailto:vyshakmanju18@gmail.com" class="contact-link" target="_blank">
+                        <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg></div>
+                        <span>Email</span>
+                    </a>
+                    <a href="https://www.linkedin.com/in/vyshaktm180903/" class="contact-link" target="_blank">
+                        <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg></div>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://github.com/starkdockris" class="contact-link" target="_blank">
+                        <div class="contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" fill="currentColor"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3.3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-27.9-112.3-124.3 0-27.5 7.6-51.3 22.6-69.6-2.3-6.3-12.2-33.1 2.6-69.3 0 0 21.1-7.1 69.2 25.8 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c48.1-33 69.2-25.8 69.2-25.8 14.8 36.1 4.9 63 2.6 69.3 15.1 18.3 22.6 42.1 22.6 69.6 0 96.6-56.4 118-112.5 124.2 9.7 8.5 18.2 25.8 18.2 49.2 0 35.5-.3 64.3-.3 73.2 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8z"/></svg></div>
+                        <span>GitHub</span>
+                    </a>
                 </div>
             </div>
         </section>
@@ -440,27 +501,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- 1. Mobile Navigation Toggle ---
-            const menuButton = document.querySelector('.mobile-menu-button');
-            const mainNav = document.getElementById('main-nav');
-            const navLinks = mainNav.querySelectorAll('a');
-
-            if (menuButton) {
-                menuButton.addEventListener('click', () => {
-                    document.body.classList.toggle('nav-open');
-                });
-            }
-            
-            // Close the menu when a link is clicked
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (document.body.classList.contains('nav-open')) {
-                        document.body.classList.remove('nav-open');
-                    }
-                });
-            });
-
-            // --- 2. Typing Animation ---
+            // --- 1. Typing Animation ---
             const headingElement = document.getElementById('typing-heading');
             if (headingElement) {
                 const textToType = "Hi, I'm Vyshak T M";
@@ -484,7 +525,7 @@
                 setTimeout(typeWriter, 500);
             }
 
-            // --- 3. Infinite Gallery Loop ---
+            // --- 2. Infinite Gallery Loop ---
             const galleryTrack = document.querySelector('.gallery-track');
             if (galleryTrack) {
                 const galleryItems = Array.from(galleryTrack.children);
@@ -494,7 +535,7 @@
                 });
             }
 
-            // --- 4. Interactive Background (remains the same) ---
+            // --- 3. Interactive Background ---
             const canvas = document.getElementById('circuit-background');
             const ctx = canvas.getContext('2d');
             let width = canvas.width = window.innerWidth;
@@ -514,7 +555,7 @@
                 draw() {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-                    ctx.fillStyle = 'rgba(100, 100, 100, 0.5)';
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                     ctx.fill();
                 }
                 update() {
@@ -549,11 +590,11 @@
                             let dy = mouse.y - particlesArray[a].y;
                             let mouseDistance = Math.sqrt(dx * dx + dy * dy);
                             if (mouseDistance < mouse.radius) {
-                                ctx.strokeStyle = `rgba(140, 180, 255, ${opacityValue})`;
+                                ctx.strokeStyle = `rgba(255, 255, 255, ${opacityValue})`;
                             } else {
-                                ctx.strokeStyle = `rgba(100, 100, 100, ${opacityValue})`;
+                                ctx.strokeStyle = `rgba(255, 255, 255, ${opacityValue * 0.5})`;
                             }
-                            ctx.lineWidth = 0.5;
+                            ctx.lineWidth = 1;
                             ctx.beginPath();
                             ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
                             ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
@@ -576,4 +617,3 @@
     </script>
 </body>
 </html>
-
