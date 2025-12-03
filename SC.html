@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saga Choreography Event Mesh</title>
+    <style>
+        :root {
+            /* Professional Dark Theme Palette */
+            --bg-root: #0b0d10;
+            --bg-panel: #161b22;
+            --border-color: #30363d;
+            
+            /* Status Colors */
+            --color-primary: #58a6ff;  /* Blue (Info/Active) */
+            --color-success: #238636;  /* Green (Success) */
+            --color-error: #da3633;    /* Red (Failure) */
+            --color-warn: #d29922;     /* Orange (Rollback/Warn) */
+            --color-event: #a371f7;    /* Purple (Event Bus) */
+            
+            /* Typography */
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            --font-code: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body { 
+            margin: 0; padding: 0; 
+            background-color: var(--bg-root); 
+            color: var(--text-main); 
+            font-family: var(--font-ui); 
+            height: 100vh; 
+            display: grid; 
+            grid-template-rows: 48px 1fr; 
+            overflow: hidden; 
+        }
+
+        /* --- HEADER --- */
+        .top-bar {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .system-title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .system-title span { color: var(--color-event); }
+
+        .status-indicators {
+            display: flex;
+            gap: 16px;
+            font-size: 0.75rem;
+            font-family: var(--font-code);
+            color: var(--text-muted);
+        }
+        
+        .indicator { display: flex; align-items: center; gap: 6px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background-color: #333; }
+        .dot.active { background-color: var(--color-success); box-shadow: 0 0 8px rgba(35, 134, 54, 0.4); }
+
+        /* --- MAIN LAYOUT --- */
+        .workspace {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* --- LEFT PANEL: CONTROLS --- */
+        .panel-left {
+            background-color: #0d1117;
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .control-group {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+        }
+
+        .group-title {
+            margin: 0 0 12px 0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--color-primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover { background-color: #3b8cf6; }
+        .btn-action:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
+
+        .switch-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+        .switch-row:last-child { margin-bottom: 0; }
+        .switch-row input { accent-color: var(--color-error); }
+
+        /* --- CENTER PANEL: VISUALIZER --- */
+        .panel-center {
+            position: relative;
+            background: radial-gradient(circle at center, #13161c 0%, #0b0d10 100%);
+            display: flex;
+            justify-content: center;
+            overflow-y: auto;
+        }
+
+        /* Central Event Bus Line */
+        .event-spine {
+            position: absolute;
+            top: 40px; bottom: 40px;
+            width: 4px;
+            background: linear-gradient(to bottom, #238636, #a371f7, #58a6ff);
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        /* Moving Packet */
+        .data-packet {
+            position: absolute;
+            width: 12px; height: 12px;
+            background-color: #fff;
+            border-radius: 2px;
+            z-index: 10;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            box-shadow: 0 0 12px rgba(255,255,255,0.8);
+            display: none;
+        }
+
+        .nodes-container {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 1;
+        }
+
+        .node-row {
+            display: flex;
+            align-items: center;
+            height: 80px;
+            position: relative;
+        }
+
+        .connector-line {
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 0 16px;
+            position: relative;
+        }
+        .connector-line::after {
+            content: '';
+            position: absolute;
+            width: 6px; height: 6px;
+            background-color: var(--text-muted);
+            border-radius: 50%;
+            top: -2.5px;
+        }
+        .left-align .connector-line::after { right: 0; }
+        .right-align .connector-line::after { left: 0; }
+
+        .service-card {
+            width: 240px;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            font-family: var(--font-code);
+            transition: all 0.3s ease;
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .protocol-tag {
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            background-color: #21262d;
+            border-radius: 3px;
+            color: var(--text-muted);
+        }
+
+        .data-display {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            background-color: #0b0d10;
+            padding: 6px;
+            border-radius: 3px;
+            border: 1px solid #21262d;
+            white-space: pre;
+            overflow: hidden;
+        }
+
+        /* Node States */
+        .service-card.active { border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }
+        .service-card.success { border-color: var(--color-success); border-left: 3px solid var(--color-success); }
+        .service-card.error { border-color: var(--color-error); border-left: 3px solid var(--color-error); }
+        .service-card.rollback { border-color: var(--color-warn); border-style: dashed; }
+
+        /* --- RIGHT PANEL: LOGS --- */
+        .panel-right {
+            background-color: #0d1117;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            padding: 12px 16px;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .log-terminal {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+        }
+
+        .log-line {
+            padding: 4px 0 4px 10px;
+            border-left: 2px solid #333;
+            margin-bottom: 4px;
+            line-height: 1.4;
+            color: var(--text-muted);
+        }
+        
+        .type-pub { border-color: var(--color-event); color: var(--text-main); }
+        .type-err { border-color: var(--color-error); color: var(--color-error); }
+        .type-comp { border-color: var(--color-warn); color: var(--color-warn); }
+
+    </style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="top-bar">
+    <div class="system-title">
+        <span>❖</span> SAGA CHOREOGRAPHY EVENT MESH
+    </div>
+    <div class="status-indicators">
+        <div class="indicator"><div class="dot active"></div> BUS_ACTIVE</div>
+        <div class="indicator"><div class="dot active"></div> BROKER_READY</div>
+    </div>
+</header>
+
+<div class="workspace">
+    
+    <!-- LEFT CONTROLS -->
+    <aside class="panel-left">
+        <div class="control-group">
+            <h3 class="group-title">Operations</h3>
+            <button class="btn-action" id="startBtn" onclick="triggerGenesis()">PUBLISH ORDER EVENT</button>
+            <p style="margin-top:10px; font-size:0.75rem; color:var(--text-muted); line-height:1.4;">
+                Initiates a new distributed transaction via the Event Bus. Services react asynchronously.
+            </p>
+        </div>
+
+        <div class="control-group">
+            <h3 class="group-title" style="color:var(--color-error);">Failure Injection</h3>
+            <label class="switch-row"><input type="checkbox" id="fail-fraud"> Fail Fraud Service</label>
+            <label class="switch-row"><input type="checkbox" id="fail-pay"> Fail Payment Service</label>
+            <label class="switch-row"><input type="checkbox" id="fail-inv"> Fail Inventory Service</label>
+            <label class="switch-row"><input type="checkbox" id="fail-robot"> Fail Robot Service</label>
+            <label class="switch-row"><input type="checkbox" id="fail-qc"> Fail QC Service</label>
+            <label class="switch-row"><input type="checkbox" id="fail-ship"> Fail Shipping Service</label>
+        </div>
+    </aside>
+
+    <!-- CENTER VISUALIZER -->
+    <main class="panel-center">
+        <!-- Vertical Line -->
+        <div class="event-spine"></div>
+        <!-- Moving Packet -->
+        <div class="data-packet" id="packet"></div>
+
+        <div class="nodes-container">
+            
+            <!-- 01 Order (Left) -->
+            <div class="node-row left-align">
+                <div class="service-card" id="n-order">
+                    <div class="service-header">01 ORDER SERVICE <span class="protocol-tag">PUB/SUB</span></div>
+                    <div class="data-display" id="d-order">Status: IDLE</div>
+                </div>
+                <div class="connector-line"></div>
+                <div style="flex:1"></div>
+            </div>
+
+            <!-- 02 Fraud (Right) -->
+            <div class="node-row right-align">
+                <div style="flex:1"></div>
+                <div class="connector-line"></div>
+                <div class="service-card" id="n-fraud">
+                    <div class="service-header">02 FRAUD DETECTION <span class="protocol-tag">REST</span></div>
+                    <div class="data-display" id="d-fraud">Status: IDLE</div>
+                </div>
+            </div>
+
+            <!-- 03 Payment (Left) -->
+            <div class="node-row left-align">
+                <div class="service-card" id="n-pay">
+                    <div class="service-header">03 PAYMENT GATEWAY <span class="protocol-tag">REST</span></div>
+                    <div class="data-display" id="d-pay">Status: IDLE</div>
+                </div>
+                <div class="connector-line"></div>
+                <div style="flex:1"></div>
+            </div>
+
+            <!-- 04 Inventory (Right) -->
+            <div class="node-row right-align">
+                <div style="flex:1"></div>
+                <div class="connector-line"></div>
+                <div class="service-card" id="n-inv">
+                    <div class="service-header">04 INVENTORY CORE <span class="protocol-tag">GRPC</span></div>
+                    <div class="data-display" id="d-inv">Status: IDLE</div>
+                </div>
+            </div>
+
+            <!-- 05 Robot (Left) -->
+            <div class="node-row left-align">
+                <div class="service-card" id="n-robot">
+                    <div class="service-header">05 IOT ROBOT <span class="protocol-tag">MQTT</span></div>
+                    <div class="data-display" id="d-robot">Status: IDLE</div>
+                </div>
+                <div class="connector-line"></div>
+                <div style="flex:1"></div>
+            </div>
+
+            <!-- 06 QC (Right) -->
+            <div class="node-row right-align">
+                <div style="flex:1"></div>
+                <div class="connector-line"></div>
+                <div class="service-card" id="n-qc">
+                    <div class="service-header">06 QC SENSOR <span class="protocol-tag">TCP</span></div>
+                    <div class="data-display" id="d-qc">Status: IDLE</div>
+                </div>
+            </div>
+
+            <!-- 07 Shipping (Left) -->
+            <div class="node-row left-align">
+                <div class="service-card" id="n-ship">
+                    <div class="service-header">07 LOGISTICS <span class="protocol-tag">REST</span></div>
+                    <div class="data-display" id="d-ship">Status: IDLE</div>
+                </div>
+                <div class="connector-line"></div>
+                <div style="flex:1"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- RIGHT LOGS -->
+    <aside class="panel-right">
+        <div class="panel-header">Event Bus Stream</div>
+        <div class="log-terminal" id="logs"></div>
+    </aside>
+
+</div>
+
+<script>
+    // --- SIMULATION LOGIC ---
+
+    const delay = ms => new Promise(r => setTimeout(r, ms));
+    const getEl = id => document.getElementById(id);
+    
+    // UI Helpers
+    function updateNode(id, state, status='') {
+        const el = getEl(`n-${id}`);
+        const nuc = getEl(`d-${id}`);
+        
+        // Clear classes and set new status
+        el.className = `service-card ${status}`;
+        nuc.innerHTML = JSON.stringify(state, null, 2).replace(/[{},"]/g, '').trim();
+    }
+
+    function logEvent(evt, type='type-pub') {
+        const div = document.createElement('div');
+        div.className = `log-line ${type}`;
+        const time = new Date().toISOString().split('T')[1].slice(0,8);
+        div.innerHTML = `<span style="opacity:0.5">[${time}]</span> <b>${evt}</b>`;
+        const c = getEl('logs');
+        c.appendChild(div);
+        c.scrollTop = c.scrollHeight;
+    }
+
+    async function animatePacket(startY, endY, color='#ffffff') {
+        const p = getEl('packet');
+        p.style.display = 'block';
+        p.style.backgroundColor = color;
+        p.style.boxShadow = `0 0 10px ${color}`;
+        
+        // Approximate grid row positions (0 to 100%)
+        // Row 1 starts ~5%, Row 7 ends ~95%
+        const start = 6 + (startY * 13);
+        const end = 6 + (endY * 13);
+        
+        const frames = 20;
+        const diff = end - start;
+        
+        for(let i=0; i<=frames; i++) {
+            const current = start + (diff * (i/frames));
+            p.style.top = `${current}%`;
+            await delay(20);
+        }
+        p.style.display = 'none';
+    }
+
+    // --- EVENT BUS CORE ---
+    const EventBus = {
+        publish: async (event, payload) => {
+            // Determine log type based on event name
+            let logType = 'type-pub';
+            if(event.includes('FAILED')) logType = 'type-err';
+            else if(event.includes('COMPENSATED')) logType = 'type-comp';
+            
+            logEvent(event, logType);
+            
+            // --- ROUTING LOGIC (Simulates Distributed Subscribers) ---
+            
+            if (event === 'ORDER_CREATED') await Services.fraud.onOrderCreated(payload);
+            
+            else if (event === 'FRAUD_PASSED') await Services.payment.onFraudPassed(payload);
+            
+            else if (event === 'PAYMENT_CAPTURED') await Services.inventory.onPaymentCaptured(payload);
+            
+            else if (event === 'STOCK_RESERVED') await Services.robot.onStockReserved(payload);
+            
+            else if (event === 'ITEM_PICKED') await Services.qc.onItemPicked(payload);
+            
+            else if (event === 'QC_PASSED') await Services.ship.onQCPassed(payload);
+
+            // --- FAILURE CASCADE (Daisy Chain Rollback) ---
+            
+            // 1. QC Fails -> Robot Compensates
+            else if (event === 'QC_FAILED') await Services.robot.compensate(payload);
+
+            // 2. Robot Done -> Inventory Compensates
+            else if (event === 'ROBOT_COMPENSATED') await Services.inventory.compensate(payload);
+
+            // 3. Inventory Done -> Payment Compensates
+            else if (event === 'INV_COMPENSATED') await Services.payment.compensate(payload);
+
+            // 4. Payment Done -> Order Fails
+            else if (event === 'PAY_COMPENSATED') await Services.order.fail(payload);
+            
+            // -- Mid-Stream Intercepts --
+            else if (event === 'ROBOT_FAILED') await Services.inventory.compensate(payload);
+            else if (event === 'INV_FAILED') await Services.payment.compensate(payload);
+            else if (event === 'PAY_FAILED') await Services.order.fail(payload);
+            else if (event === 'FRAUD_FAILED') await Services.order.fail(payload);
+        }
+    };
+
+    // --- MICROSERVICES ---
+    
+    const Services = {
+        order: {
+            create: async () => {
+                const id = "ORD-" + Math.floor(Math.random()*9999);
+                updateNode('order', { id: id, state: 'PENDING' }, 'active');
+                await delay(600);
+                updateNode('order', { id: id, state: 'CREATED' }, 'success');
+                
+                // Packet moves from Order(0) to Fraud(1)
+                await animatePacket(0, 1);
+                EventBus.publish('ORDER_CREATED', { id });
+            },
+            fail: async (p) => {
+                // Packet moves UP from Payment(2) to Order(0)
+                await animatePacket(2, 0, '#da3633'); 
+                updateNode('order', { id: p.id, state: 'REJECTED' }, 'error');
+                logEvent(`TRANSACTION TERMINATED: ${p.id}`, 'type-err');
+                getEl('startBtn').disabled = false;
+            }
+        },
+
+        fraud: {
+            onOrderCreated: async (p) => {
+                updateNode('fraud', { check: 'ANALYZING' }, 'active');
+                await delay(800);
+                
+                if(getEl('fail-fraud').checked) {
+                    updateNode('fraud', { check: 'RISK_HIGH' }, 'error');
+                    EventBus.publish('FRAUD_FAILED', p);
+                    return;
+                }
+
+                updateNode('fraud', { check: 'VERIFIED' }, 'success');
+                await animatePacket(1, 2);
+                EventBus.publish('FRAUD_PASSED', p);
+            }
+        },
+
+        payment: {
+            onFraudPassed: async (p) => {
+                updateNode('pay', { tx: 'PROCESSING' }, 'active');
+                await delay(1000);
+
+                if(getEl('fail-pay').checked) {
+                    updateNode('pay', { tx: 'DECLINED' }, 'error');
+                    EventBus.publish('PAY_FAILED', p);
+                    return;
+                }
+
+                p.txId = "TX-" + Math.floor(Math.random()*999);
+                updateNode('pay', { tx: 'CAPTURED', amt: 4500 }, 'success');
+                await animatePacket(2, 3);
+                EventBus.publish('PAYMENT_CAPTURED', p);
+            },
+            compensate: async (p) => {
+                await animatePacket(3, 2, '#d29922');
+                updateNode('pay', { tx: 'REFUNDING' }, 'rollback');
+                await delay(800);
+                updateNode('pay', { tx: 'VOIDED', amt: 0 }, 'rollback');
+                EventBus.publish('PAY_COMPENSATED', p);
+            }
+        },
+
+        inventory: {
+            onPaymentCaptured: async (p) => {
+                updateNode('inv', { stock: 'CHECKING' }, 'active');
+                await delay(800);
+
+                if(getEl('fail-inv').checked) {
+                    updateNode('inv', { err: 'OUT_OF_STOCK' }, 'error');
+                    EventBus.publish('INV_FAILED', p);
+                    return;
+                }
+
+                updateNode('inv', { stock: 49, locked: true }, 'success');
+                await animatePacket(3, 4);
+                EventBus.publish('STOCK_RESERVED', p);
+            },
+            compensate: async (p) => {
+                await animatePacket(4, 3, '#d29922');
+                updateNode('inv', { action: 'UNLOCKING' }, 'rollback');
+                await delay(800);
+                updateNode('inv', { stock: 50, locked: false }, 'rollback');
+                EventBus.publish('INV_COMPENSATED', p);
+            }
+        },
+
+        robot: {
+            onStockReserved: async (p) => {
+                updateNode('robot', { arm: 'MOVING' }, 'active');
+                await delay(1500);
+
+                if(getEl('fail-robot').checked) {
+                    updateNode('robot', { err: 'SERVO_JAM' }, 'error');
+                    EventBus.publish('ROBOT_FAILED', p);
+                    return;
+                }
+
+                updateNode('robot', { arm: 'HOLDING', bat: 85 }, 'success');
+                await animatePacket(4, 5);
+                EventBus.publish('ITEM_PICKED', p);
+            },
+            compensate: async (p) => {
+                await animatePacket(5, 4, '#d29922');
+                updateNode('robot', { arm: 'RETURNING' }, 'rollback');
+                await delay(1000);
+                updateNode('robot', { arm: 'IDLE', item: 'NONE' }, 'rollback');
+                EventBus.publish('ROBOT_COMPENSATED', p);
+            }
+        },
+
+        qc: {
+            onItemPicked: async (p) => {
+                updateNode('qc', { scan: 'READING' }, 'active');
+                await delay(1000);
+
+                if(getEl('fail-qc').checked) {
+                    updateNode('qc', { scan: 'FAIL', reason: 'DMG' }, 'error');
+                    // Triggers the long rollback chain
+                    EventBus.publish('QC_FAILED', p);
+                    return;
+                }
+
+                updateNode('qc', { scan: 'PASS', wgt: '2kg' }, 'success');
+                await animatePacket(5, 6);
+                EventBus.publish('QC_PASSED', p);
+            }
+        },
+
+        ship: {
+            onQCPassed: async (p) => {
+                updateNode('ship', { label: 'GENERATING' }, 'active');
+                await delay(800);
+                
+                if(getEl('fail-ship').checked) {
+                    updateNode('ship', { err: 'API_DOWN' }, 'error');
+                    EventBus.publish('QC_FAILED', p); // Re-use QC fail logic for full rollback
+                    return;
+                }
+
+                updateNode('ship', { label: 'FEDEX-1', sts: 'SENT' }, 'success');
+                await animatePacket(6, 7); // Moves off bottom
+                logEvent("★ TRANSACTION COMPLETED SUCCESSFULLY", 'type-pub');
+                getEl('startBtn').disabled = false;
+            }
+        }
+    };
+
+    function triggerGenesis() {
+        getEl('startBtn').disabled = true;
+        getEl('logs').innerHTML = '';
+        
+        // Reset all nodes
+        const nodes = ['order','fraud','pay','inv','robot','qc','ship'];
+        nodes.forEach(id => updateNode(id, { status: 'WAITING' }, ''));
+        
+        // Start Chain
+        Services.order.create();
+    }
+
+</script>
+</body>
+</html>
