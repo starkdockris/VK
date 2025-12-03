@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saga Orchestrator Command Center</title>
+    <style>
+        :root {
+            /* Professional Dark Palette */
+            --bg: #050505;
+            --panel: #0a0a0a;
+            --border: #222;
+            
+            /* Status Colors */
+            --blue: #3fb950;   /* Success */
+            --cyan: #58a6ff;   /* REST/Info */
+            --purple: #bc8cff; /* gRPC/Internal */
+            --orange: #d29922; /* IoT/Warn */
+            --red: #f85149;    /* Error */
+            
+            /* Text */
+            --text-main: #c9d1d9;
+            --text-dim: #8b949e;
+            --font-code: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+        }
+
+        * { box-sizing: border-box; }
+        body { 
+            margin: 0; padding: 0; 
+            background: var(--bg); color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+            height: 100vh; overflow: hidden; 
+            display: grid; 
+            grid-template-rows: 50px 1fr;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: var(--panel); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; font-size: 0.9rem;
+        }
+        .logo { font-weight: 700; color: var(--cyan); display: flex; align-items: center; gap: 10px; letter-spacing: 1px; text-transform: uppercase; }
+        
+        .status-container { display: flex; gap: 15px; align-items: center; }
+        .status-pill { 
+            background: #111; color: #777; padding: 2px 8px; border-radius: 4px; 
+            font-size: 0.7rem; border: 1px solid #333; font-family: var(--font-code);
+        }
+        .status-pill.active { color: var(--blue); border-color: var(--blue); }
+
+        /* --- MAIN LAYOUT --- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            height: 100%;
+        }
+
+        /* LEFT: CONTROLS & CHAOS */
+        .col-left {
+            background: #090c10; border-right: 1px solid var(--border);
+            padding: 20px; display: flex; flex-direction: column; gap: 20px;
+        }
+        .card {
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 6px; padding: 15px;
+        }
+        .product-preview {
+            text-align: center; margin-bottom: 15px;
+        }
+        .product-icon { font-size: 3rem; margin-bottom: 5px; display: block; }
+        .btn-main {
+            width: 100%; background: var(--blue); color: white; border: none;
+            padding: 12px; font-weight: 600; border-radius: 6px; cursor: pointer;
+            transition: 0.2s; font-size: 0.85rem; letter-spacing: 0.5px;
+        }
+        .btn-main:hover { filter: brightness(1.1); }
+        .btn-main:disabled { background: var(--border); color: var(--text-dim); cursor: not-allowed; }
+
+        .chaos-header {
+            color: var(--red); font-weight: bold; font-size: 0.75rem; 
+            text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid #333; padding-bottom: 5px;
+        }
+        .toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.8rem; margin-bottom: 10px; color: var(--text-dim); cursor: pointer;
+        }
+        .toggle-row:hover { color: var(--text-main); }
+        .toggle-row input { accent-color: var(--red); }
+        
+        /* CENTER: THE ORCHESTRATION GRAPH */
+        .col-center {
+            position: relative;
+            background: radial-gradient(circle at 50% 50%, #161b22 0%, #030507 80%);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* The Brain */
+        .orchestrator-hub {
+            width: 140px; height: 140px;
+            background: rgba(13, 17, 23, 0.9);
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 10;
+            box-shadow: 0 0 40px rgba(88, 166, 255, 0.1);
+            position: relative;
+            transition: 0.3s;
+        }
+        .orchestrator-hub.active { box-shadow: 0 0 50px rgba(88, 166, 255, 0.4); border-color: #fff; }
+        .orchestrator-hub.error { border-color: var(--red); box-shadow: 0 0 50px rgba(248, 81, 73, 0.4); }
+
+        /* The Nodes (Satellites) */
+        .node {
+            position: absolute;
+            width: 180px;
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--text-dim);
+            padding: 10px;
+            border-radius: 4px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: var(--font-code);
+        }
+        .node header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.7rem; font-weight: bold; margin-bottom: 8px; color: #fff;
+        }
+        .node .data-view {
+            font-size: 0.65rem; color: var(--text-dim);
+            background: #000; padding: 6px; border-radius: 3px;
+            min-height: 40px; white-space: pre-wrap;
+            border: 1px solid #222;
+        }
+
+        /* Node States */
+        .node.active { transform: scale(1.05); border-color: var(--cyan); border-left-color: var(--cyan); box-shadow: 0 0 15px rgba(88,166,255,0.2); }
+        .node.success { border-color: var(--blue); border-left-color: var(--blue); }
+        .node.error { border-color: var(--red); border-left-color: var(--red); }
+        .node.compensating { border-color: var(--orange); border-left-color: var(--orange); border-style: dashed; }
+
+        /* Positioning 7 Nodes in a Circle - UPDATED FLOW */
+        /* Center is (0,0). Radius approx 280px */
+        .pos-1 { top: 10%; left: 50%; transform: translate(-50%, 0); } /* 1. Order */
+        .pos-2 { top: 25%; right: 10%; } /* 2. Fraud */
+        .pos-3 { top: 50%; right: 5%; transform: translate(0, -50%); } /* 3. Payment */
+        .pos-4 { bottom: 25%; right: 10%; } /* 4. Inventory */
+        .pos-5 { bottom: 25%; left: 10%; } /* 5. Robot */
+        .pos-6 { top: 50%; left: 5%; transform: translate(0, -50%); } /* 6. QC */
+        .pos-7 { top: 25%; left: 10%; } /* 7. Ship */
+
+        /* Protocols Badges */
+        .badge { font-size: 0.6rem; padding: 1px 4px; border-radius: 2px; background: #222; color: #999; }
+        
+        /* RIGHT: LOGS & STACK */
+        .col-right {
+            background: #0d1117; border-left: 1px solid var(--border);
+            display: flex; flex-direction: column;
+        }
+        .panel-header {
+            padding: 12px; background: #161b22; border-bottom: 1px solid var(--border);
+            font-size: 0.75rem; font-weight: bold; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;
+        }
+        
+        .stack-container {
+            height: 30%; border-bottom: 1px solid var(--border);
+            padding: 10px; overflow-y: auto;
+        }
+        .stack-item {
+            font-family: var(--font-code); font-size: 0.7rem;
+            padding: 6px 10px; margin-bottom: 4px; border-radius: 3px;
+            background: rgba(63, 185, 80, 0.1); color: var(--blue); border: 1px solid rgba(63, 185, 80, 0.2);
+            animation: slideIn 0.3s ease;
+        }
+        .stack-item.pop {
+            background: rgba(210, 153, 34, 0.1); color: var(--orange); border-color: var(--orange);
+            text-decoration: line-through; opacity: 0.7;
+        }
+
+        .logs-container { flex: 1; padding: 10px; overflow-y: auto; font-family: var(--font-code); font-size: 0.75rem; }
+        .log { margin-bottom: 6px; padding-left: 8px; border-left: 2px solid #333; line-height: 1.4; }
+        .log-info { border-color: var(--cyan); }
+        .log-warn { border-color: var(--orange); color: var(--orange); }
+        .log-err  { border-color: var(--red); color: var(--red); }
+        .log-iot  { border-color: #fff; color: #fff; background: #111; }
+
+        @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <div class="logo">
+        <span>❖</span> SAGA ORCHESTRATOR
+    </div>
+    <div class="status-container">
+        <div class="status-pill active">SYSTEM ONLINE</div>
+        <div class="status-pill active">gRPC ENABLED</div>
+        <div class="status-pill active">MQTT BROKER</div>
+    </div>
+</div>
+
+<div class="main-grid">
+    
+    <!-- LEFT: CONTROLS -->
+    <div class="col-left">
+        <div class="card">
+            <div class="product-preview">
+                <span class="product-icon">💻</span>
+                <div style="font-weight:bold; margin-bottom:5px;">Enterprise Laptop X1</div>
+                <div style="color:var(--blue); font-size:1.2rem;">₹49,999.00</div>
+            </div>
+            <button class="btn-main" id="startBtn" onclick="runOrchestrator()">INITIATE ORDER</button>
+        </div>
+
+        <div class="card">
+            <div class="chaos-header">Chaos Engineering Injection</div>
+            
+            <label class="toggle-row"><input type="checkbox" id="fail-fraud"> <span>Fail Fraud Check (AI)</span></label>
+            <label class="toggle-row"><input type="checkbox" id="fail-pay"> <span>Fail Payment (API)</span></label>
+            <label class="toggle-row"><input type="checkbox" id="fail-inv"> <span>Fail Inventory (gRPC)</span></label>
+            <label class="toggle-row"><input type="checkbox" id="fail-robot"> <span>Fail Robot Pick (IoT)</span></label>
+            <label class="toggle-row"><input type="checkbox" id="fail-qc"> <span>Fail QC Sensor (TCP)</span></label>
+            <label class="toggle-row"><input type="checkbox" id="fail-ship"> <span>Fail Shipping (API)</span></label>
+        </div>
+        
+        <div style="font-size:0.7rem; color:#666; margin-top:auto; line-height:1.4;">
+            <strong>Sequence:</strong><br>
+            1. Order &nbsp;→ 2. Fraud &nbsp;→ 3. Pay<br>
+            4. Stock &nbsp;→ 5. Robot &nbsp;→ 6. QC &nbsp;→ 7. Ship
+        </div>
+    </div>
+
+    <!-- CENTER: VISUALIZATION -->
+    <div class="col-center">
+        
+        <!-- CENTRAL BRAIN -->
+        <div class="orchestrator-hub" id="hub">
+            <div style="font-size:2rem; margin-bottom:5px;">🧠</div>
+            <div style="font-size:0.7rem; font-weight:bold; letter-spacing:1px;">CORE</div>
+            <div style="font-size:0.6rem; color:#888;" id="hub-status">IDLE</div>
+        </div>
+
+        <!-- 1. ORDER -->
+        <div class="node pos-1" id="node-order">
+            <header>01 ORDER SVC <span class="badge">REST</span></header>
+            <div class="data-view" id="data-order">WAITING...</div>
+        </div>
+
+        <!-- 2. FRAUD AI -->
+        <div class="node pos-2" id="node-fraud">
+            <header>02 FRAUD AI <span class="badge">REST</span></header>
+            <div class="data-view" id="data-fraud">WAITING...</div>
+        </div>
+
+        <!-- 3. PAYMENT (MOVED UP) -->
+        <div class="node pos-3" id="node-pay">
+            <header>03 PAYMENT GTW <span class="badge">REST</span></header>
+            <div class="data-view" id="data-pay">WAITING...</div>
+        </div>
+
+        <!-- 4. INVENTORY -->
+        <div class="node pos-4" id="node-inv">
+            <header>04 INVENTORY <span class="badge">gRPC</span></header>
+            <div class="data-view" id="data-inv">WAITING...</div>
+        </div>
+
+        <!-- 5. ROBOT (IoT) -->
+        <div class="node pos-5" id="node-robot">
+            <header>05 WAREHOUSE BOT <span class="badge">MQTT</span></header>
+            <div class="data-view" id="data-robot">WAITING...</div>
+        </div>
+
+        <!-- 6. QC SENSOR (IoT) -->
+        <div class="node pos-6" id="node-qc">
+            <header>06 QC SCANNER <span class="badge">TCP</span></header>
+            <div class="data-view" id="data-qc">WAITING...</div>
+        </div>
+
+        <!-- 7. SHIPPING -->
+        <div class="node pos-7" id="node-ship">
+            <header>07 LOGISTICS <span class="badge">REST</span></header>
+            <div class="data-view" id="data-ship">WAITING...</div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: DATA STREAMS -->
+    <div class="col-right">
+        <div class="panel-header">COMPENSATION STACK (LIFO)</div>
+        <div class="stack-container" id="stack-view"></div>
+
+        <div class="panel-header">LIVE TERMINAL</div>
+        <div class="logs-container" id="log-view">
+            <div class="log log-info">System Ready.</div>
+            <div class="log log-info">Orchestrator listening on port 8080...</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- CONFIG & UTILS ---
+    const delay = ms => new Promise(r => setTimeout(r, ms));
+    const getEl = id => document.getElementById(id);
+    
+    // UI Helpers
+    function log(msg, type='info') {
+        const div = document.createElement('div');
+        div.className = `log log-${type}`;
+        div.innerHTML = `<span style="opacity:0.5">[${new Date().toISOString().split('T')[1].slice(0,8)}]</span> ${msg}`;
+        const c = getEl('log-view');
+        c.appendChild(div);
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function updateNode(id, state, status='') {
+        const n = getEl(`node-${id}`);
+        const d = getEl(`data-${id}`);
+        
+        // Reset classes
+        n.classList.remove('active', 'success', 'error', 'compensating');
+        if(status) n.classList.add(status);
+        
+        // Format JSON
+        d.innerHTML = JSON.stringify(state, null, 2)
+            .replace(/[{},"]/g, '')
+            .trim();
+    }
+
+    function pushStack(name) {
+        const div = document.createElement('div');
+        div.className = 'stack-item';
+        div.innerText = `↺ Rollback Action: ${name}`;
+        const c = getEl('stack-view');
+        c.insertBefore(div, c.firstChild);
+    }
+
+    function popStack() {
+        const c = getEl('stack-view');
+        if(c.firstChild) {
+            c.firstChild.classList.add('pop');
+            return true;
+        }
+        return false;
+    }
+
+    // --- SERVICE MOCKS ---
+    
+    const Services = {
+        order: {
+            create: async () => {
+                await delay(600);
+                return { id: "ORD-"+Math.floor(Math.random()*9999), status: "PENDING" };
+            },
+            fail: async (id) => { return { id: id, status: "REJECTED" }; },
+            confirm: async (id) => { return { id: id, status: "CONFIRMED" }; }
+        },
+        fraud: {
+            check: async (shouldFail) => {
+                log("AI Model analyzing user risk score...", "info");
+                await delay(800);
+                if(shouldFail) throw { step: 'fraud', msg: "High Risk Score Detected (0.98)" };
+                return { risk: 0.02, verified: true };
+            }
+        },
+        payment: {
+            charge: async (shouldFail) => {
+                log("API: POST /stripe/charge...", "info");
+                await delay(1000);
+                if(shouldFail) throw { step: 'pay', msg: "402 Payment Required" };
+                // UPDATED PRICE TO 49999
+                return { tx: "TX-"+Math.floor(Math.random()*100000), amt: 49999, status: "CAPTURED" };
+            },
+            compensate: async () => {
+                log("API: POST /stripe/refund...", "warn");
+                await delay(800);
+                return { tx: "REFUNDED", amt: 0, status: "VOIDED" };
+            }
+        },
+        inventory: {
+            reserve: async (shouldFail) => {
+                log("gRPC: Checking SKU-LAPTOP-X1 availability...", "info");
+                await delay(800);
+                if(shouldFail) throw { step: 'inv', msg: "gRPC Error: Insufficient Stock" };
+                return { sku: "LAPTOP-X1", reserved: true, qty: 1 };
+            },
+            compensate: async () => {
+                log("gRPC: Releasing SKU-LAPTOP-X1 lock...", "warn");
+                await delay(500);
+                return { sku: "LAPTOP-X1", reserved: false, qty: 0 };
+            }
+        },
+        robot: {
+            pick: async (shouldFail) => {
+                log("MQTT: Pub topic 'robot/arm/move'...", "iot");
+                await delay(1500); // Mechanical delay
+                if(shouldFail) throw { step: 'robot', msg: "Servo Overload / Jammed" };
+                log("MQTT: Sub topic 'robot/status': GRIPPED", "iot");
+                return { arm: "HOLDING", bat: "88%" };
+            },
+            compensate: async () => {
+                log("MQTT: Pub 'robot/arm/return'...", "iot");
+                await delay(1000);
+                return { arm: "IDLE", bat: "87%" };
+            }
+        },
+        qc: {
+            scan: async (shouldFail) => {
+                log("TCP: Reading sensor stream...", "iot");
+                await delay(800);
+                if(shouldFail) throw { step: 'qc', msg: "QC Check Failed: Damaged Item" };
+                // UPDATED WEIGHT FOR LAPTOP
+                return { weight: "1.5kg", integrity: "100%" };
+            },
+            compensate: async () => {
+                log("TCP: Flagging item for manual review...", "warn");
+                await delay(500);
+                return { weight: "--", integrity: "FLAGGED" };
+            }
+        },
+        shipping: {
+            ship: async (shouldFail) => {
+                log("API: POST /fedex/label...", "info");
+                await delay(1000);
+                if(shouldFail) throw { step: 'ship', msg: "503 Shipping Partner Unavailable" };
+                return { label: "LBL-FEDEX-001", eta: "2 Days" };
+            }
+        }
+    };
+
+    // --- MAIN ORCHESTRATOR ENGINE ---
+
+    async function runOrchestrator() {
+        // UI Reset
+        const btn = getEl('startBtn');
+        btn.disabled = true;
+        btn.innerText = "PROCESSING TRANSACTION...";
+        getEl('log-view').innerHTML = '';
+        getEl('stack-view').innerHTML = '';
+        getEl('hub').className = 'orchestrator-hub active';
+        getEl('hub-status').innerText = "RUNNING";
+        getEl('hub-status').style.color = "var(--cyan)";
+
+        // Reset Nodes
+        const nodeKeys = ['order','fraud','pay','inv','robot','qc','ship'];
+        nodeKeys.forEach(k => updateNode(k, { status: "WAITING" }));
+
+        // Inputs
+        const fails = {
+            fraud: getEl('fail-fraud').checked,
+            pay: getEl('fail-pay').checked,
+            inv: getEl('fail-inv').checked,
+            robot: getEl('fail-robot').checked,
+            qc: getEl('fail-qc').checked,
+            ship: getEl('fail-ship').checked,
+        };
+
+        const compensationStack = [];
+        let orderId = null;
+
+        try {
+            // STEP 1: ORDER
+            updateNode('order', { status: "CREATING..." }, "active");
+            const orderData = await Services.order.create();
+            orderId = orderData.id;
+            updateNode('order', orderData, "success");
+            log(`Order ${orderId} Created`, "info");
+
+            // STEP 2: FRAUD (No compensation needed if fail)
+            updateNode('fraud', { status: "ANALYZING..." }, "active");
+            const fraudData = await Services.fraud.check(fails.fraud);
+            updateNode('fraud', fraudData, "success");
+            log("Identity Verified", "info");
+
+            // STEP 3: PAYMENT (EARLY CHARGE)
+            updateNode('pay', { status: "CHARGING..." }, "active");
+            const payData = await Services.payment.charge(fails.pay);
+            updateNode('pay', payData, "success");
+            // Add Refund to stack immediately
+            pushStack("Refund Payment");
+            compensationStack.push(async () => {
+                const d = await Services.payment.compensate();
+                updateNode('pay', d, "compensating");
+            });
+
+            // STEP 4: INVENTORY
+            updateNode('inv', { status: "RESERVING..." }, "active");
+            const invData = await Services.inventory.reserve(fails.inv);
+            updateNode('inv', invData, "success");
+            pushStack("Inventory Release");
+            compensationStack.push(async () => {
+                const d = await Services.inventory.compensate();
+                updateNode('inv', d, "compensating");
+            });
+
+            // STEP 5: ROBOT (IoT)
+            updateNode('robot', { status: "MOVING..." }, "active");
+            const botData = await Services.robot.pick(fails.robot);
+            updateNode('robot', botData, "success");
+            pushStack("Robot Restock");
+            compensationStack.push(async () => {
+                const d = await Services.robot.compensate();
+                updateNode('robot', d, "compensating");
+            });
+
+            // STEP 6: QC (IoT)
+            updateNode('qc', { status: "SCANNING..." }, "active");
+            const qcData = await Services.qc.scan(fails.qc);
+            updateNode('qc', qcData, "success");
+            pushStack("QC Flagging");
+            compensationStack.push(async () => {
+                const d = await Services.qc.compensate();
+                updateNode('qc', d, "compensating");
+            });
+
+            // STEP 7: SHIPPING (Last Step)
+            updateNode('ship', { status: "DISPATCHING..." }, "active");
+            const shipData = await Services.shipping.ship(fails.ship);
+            updateNode('ship', shipData, "success");
+
+            // --- SUCCESS END STATE ---
+            await Services.order.confirm(orderId);
+            updateNode('order', { id: orderId, status: "CONFIRMED" }, "success");
+            getEl('hub').className = 'orchestrator-hub';
+            getEl('hub').style.borderColor = "var(--blue)";
+            getEl('hub-status').innerText = "SUCCESS";
+            getEl('hub-status').style.color = "var(--blue)";
+            log(" SAGA ORDER COMPLETE ", "info");
+
+        } catch (error) {
+            // --- FAILURE HANDLING ---
+            log(`CRITICAL FAILURE at [${error.step.toUpperCase()}]: ${error.msg}`, "err");
+            updateNode(error.step, { error: error.msg }, "error");
+            
+            getEl('hub').className = 'orchestrator-hub error';
+            getEl('hub-status').innerText = "ROLLBACK";
+            getEl('hub-status').style.color = "var(--red)";
+
+            log("Initiating Compensating Transactions...", "warn");
+            await delay(1000);
+
+            // Execute Stack (LIFO)
+            while(compensationStack.length > 0) {
+                popStack();
+                const undoFn = compensationStack.pop();
+                await undoFn();
+                await delay(800);
+            }
+
+            const failData = await Services.order.fail(orderId);
+            updateNode('order', failData, "error");
+            log("Transaction Aborted & Data Consistent", "log-warn");
+        }
+
+        btn.disabled = false;
+        btn.innerText = "INITIATE ORDER";
+    }
+
+</script>
+</body>
+</html>
